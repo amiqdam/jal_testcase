@@ -1,0 +1,222 @@
+{
+  "university": {
+    "name": "Universitas Luminara",
+    "tagline": "Membentuk Pemimpin Masa Depan",
+    "accreditation": "Unggul (A)",
+    "location": "Jakarta Selatan",
+    "founded": 2005,
+    "website": "https://luminara.ac.id",
+    "description": "Universitas Luminara adalah perguruan tinggi swasta terkemuka yang berfokus pada pengembangan kompetensi berbasis teknologi dan inovasi. Dengan fasilitas modern dan kurikulum yang relevan dengan industri, Luminara menyiapkan lulusan yang siap bersaing di era digital."
+  },
+  "programs": [
+    {
+      "id": "ti",
+      "name": "Teknik Informatika",
+      "faculty": "Fakultas Ilmu Komputer",
+      "degree": "S1",
+      "accreditation": "A",
+      "duration_semesters": 8,
+      "total_credits": 144,
+      "description": "Program studi yang mempelajari pengembangan perangkat lunak, kecerdasan buatan, keamanan siber, dan komputasi awan. Mahasiswa dibekali dengan kemampuan teknis dan pemikiran komputasional untuk memecahkan masalah kompleks.",
+      "career_prospects": ["Software Engineer", "Data Scientist", "AI Engineer", "Cybersecurity Analyst", "Cloud Architect", "CTO / Tech Lead"],
+      "tuition_per_semester": 12500000,
+      "registration_fee": 5000000,
+      "curriculum_highlights": ["AI & Machine Learning", "Cloud Computing", "Cybersecurity", "Full-Stack Development", "DevOps & MLOps", "Capstone Industry Project"]
+    },
+    {
+      "id": "si",
+      "name": "Sistem Informasi",
+      "faculty": "Fakultas Ilmu Komputer",
+      "degree": "S1",
+      "accreditation": "A",
+      "duration_semesters": 8,
+      "total_credits": 144,
+      "description": "Program studi yang memadukan teknologi informasi dengan manajemen bisnis. Mahasiswa belajar merancang, mengembangkan, dan mengelola sistem informasi untuk mendukung keputusan strategis organisasi.",
+      "career_prospects": ["Business Analyst", "IT Consultant", "ERP Specialist", "Project Manager", "Data Analyst", "System Integrator"],
+      "tuition_per_semester": 11000000,
+      "registration_fee": 5000000,
+      "curriculum_highlights": ["Enterprise Systems (ERP/CRM)", "Business Intelligence", "Database Management", "IT Project Management", "Digital Transformation", "Industry Internship"]
+    },
+    {
+      "id": "manajemen",
+      "name": "Manajemen",
+      "faculty": "Fakultas Ekonomi & Bisnis",
+      "degree": "S1",
+      "accreditation": "A",
+      "duration_semesters": 8,
+      "total_credits": 144,
+      "description": "Program studi yang membekali mahasiswa dengan pengetahuan dan keterampilan manajemen modern, mulai dari pemasaran digital, manajemen keuangan, hingga kewirausahaan. Kurikulum dirancang bersama praktisi industri.",
+      "career_prospects": ["Marketing Manager", "Financial Analyst", "HR Manager", "Entrepreneur", "Management Consultant", "Brand Strategist"],
+      "tuition_per_semester": 10000000,
+      "registration_fee": 4500000,
+      "curriculum_highlights": ["Digital Marketing", "Financial Management", "Entrepreneurship", "Strategic Management", "Organizational Behavior", "Business Case Competition"]
+    },
+    {
+      "id": "psikologi",
+      "name": "Psikologi",
+      "faculty": "Fakultas Psikologi",
+      "degree": "S1",
+      "accreditation": "A",
+      "duration_semesters": 8,
+      "total_credits": 144,
+      "description": "Program studi yang mempelajari perilaku manusia secara ilmiah, mencakup psikologi klinis, industri-organisasi, pendidikan, dan sosial. Lulusan dibekali kemampuan asesmen psikologis dan intervensi berbasis bukti.",
+      "career_prospects": ["Psikolog Klinis", "HR Specialist", "UX Researcher", "Counselor", "Educational Psychologist", "Organizational Development Consultant"],
+      "tuition_per_semester": 11500000,
+      "registration_fee": 4500000,
+      "curriculum_highlights": ["Clinical Psychology", "Industrial-Organizational Psychology", "Psychometric Assessment", "Counseling Techniques", "Research Methods", "Practicum & Supervised Practice"]
+    },
+    {
+      "id": "dkv",
+      "name": "Desain Komunikasi Visual",
+      "faculty": "Fakultas Desain & Seni",
+      "degree": "S1",
+      "accreditation": "B (Baik Sekali)",
+      "duration_semesters": 8,
+      "total_credits": 144,
+      "description": "Program studi yang mengembangkan kreativitas dan kemampuan visual storytelling melalui desain grafis, motion graphics, UI/UX design, dan branding. Mahasiswa belajar menggunakan tools industri terkini.",
+      "career_prospects": ["Graphic Designer", "UI/UX Designer", "Motion Graphics Artist", "Art Director", "Brand Designer", "Creative Director"],
+      "tuition_per_semester": 13000000,
+      "registration_fee": 5000000,
+      "curriculum_highlights": ["UI/UX Design", "Motion Graphics", "Brand Identity", "Typography", "3D Modeling", "Portfolio & Exhibition"]
+    }
+  ],
+  "scholarships": [
+    {
+      "id": "beasiswa_prestasi",
+      "name": "Beasiswa Prestasi Akademik",
+      "type": "merit_based",
+      "discount_range": "25-100%",
+      "requirements": [
+        "Nilai rapor rata-rata ≥ 85 (potongan 25%)",
+        "Nilai rapor rata-rata ≥ 90 (potongan 50%)",
+        "Nilai rapor rata-rata ≥ 95 atau juara olimpiade nasional (potongan 75-100%)",
+        "Surat rekomendasi dari kepala sekolah",
+        "Tidak sedang menerima beasiswa lain"
+      ],
+      "coverage": "Potongan biaya kuliah per semester (25-100% tergantung prestasi)",
+      "quota": 50,
+      "renewal_conditions": "IPK minimum 3.50 setiap semester"
+    },
+    {
+      "id": "kip_kuliah",
+      "name": "KIP Kuliah",
+      "type": "need_based",
+      "discount_range": "100%",
+      "requirements": [
+        "Siswa SMA/SMK/MA/sederajat yang lulus atau akan lulus tahun berjalan",
+        "Memiliki NISN, NIK, dan NPSN yang valid",
+        "Memiliki potensi akademik baik (nilai rapor ≥ 75)",
+        "Keluarga dengan penghasilan bruto gabungan ≤ Rp 4.000.000/bulan",
+        "SKTM dari kelurahan/desa",
+        "Kartu Indonesia Pintar (KIP) atau bukti penerima bantuan sosial"
+      ],
+      "coverage": "100% biaya kuliah + bantuan biaya hidup Rp 700.000/bulan + bantuan biaya buku Rp 200.000/semester",
+      "quota": 100,
+      "renewal_conditions": "IPK minimum 2.75 dan aktif dalam kegiatan kampus"
+    },
+    {
+      "id": "beasiswa_internal",
+      "name": "Beasiswa Luminara Berprestasi",
+      "type": "combined",
+      "discount_range": "30-75%",
+      "requirements": [
+        "Juara 1-3 kompetisi tingkat kota/provinsi/nasional",
+        "Atlet berprestasi tingkat provinsi/nasional",
+        "Hafiz Al-Quran minimal 15 juz",
+        "Aktif dalam organisasi sosial/kemahasiswaan dengan bukti",
+        "Lolos seleksi wawancara beasiswa Luminara"
+      ],
+      "coverage": "Potongan biaya kuliah 30-75% tergantung prestasi non-akademik",
+      "quota": 30,
+      "renewal_conditions": "IPK minimum 3.00 dan aktif dalam kegiatan yang relevan"
+    }
+  ],
+  "registration": {
+    "intake_periods": [
+      {
+        "name": "Gelombang 1",
+        "period": "Januari - Maret",
+        "benefit": "Diskon early bird 10% biaya pendaftaran"
+      },
+      {
+        "name": "Gelombang 2",
+        "period": "April - Juni",
+        "benefit": "Gratis biaya pendaftaran untuk pendaftar online"
+      },
+      {
+        "name": "Gelombang 3",
+        "period": "Juli - September",
+        "benefit": "Tersedia program matrikulasi gratis"
+      }
+    ],
+    "requirements": {
+      "general": [
+        "Ijazah SMA/SMK/MA atau surat keterangan lulus",
+        "Rapor semester 1-5 (fotokopi legalisir)",
+        "Foto 3x4 berwarna (4 lembar)",
+        "Fotokopi KTP dan Kartu Keluarga",
+        "Surat keterangan sehat dari dokter",
+        "Pas foto formal dengan latar belakang merah"
+      ],
+      "international": [
+        "Ijazah setara SMA yang telah dilegalisasi",
+        "Skor TOEFL minimal 500 (PBT) atau IELTS minimal 5.5",
+        "Transkrip akademik yang telah diterjemahkan ke Bahasa Indonesia/Inggris",
+        "Paspor yang masih berlaku",
+        "Surat rekomendasi dari sekolah asal",
+        "Visa pelajar (dibantu oleh pihak universitas)"
+      ]
+    },
+    "steps": [
+      "1. Isi formulir pendaftaran online di portal.luminara.ac.id",
+      "2. Upload dokumen persyaratan (format PDF/JPG)",
+      "3. Bayar biaya pendaftaran melalui virtual account",
+      "4. Ikuti tes seleksi (Tes Potensi Akademik + Wawancara)",
+      "5. Cek pengumuman hasil seleksi (7-14 hari setelah tes)",
+      "6. Jika lolos, lakukan daftar ulang dan bayar biaya semester pertama"
+    ],
+    "fee": 350000,
+    "test_schedule": "Setiap Sabtu, pukul 09:00 WIB (sesuai gelombang pendaftaran)"
+  },
+  "facilities": [
+    "Laboratorium Komputer (4 ruang, 160 PC)",
+    "Studio Desain Digital (Mac Lab + Wacom)",
+    "Perpustakaan Digital (24/7 akses e-library)",
+    "Ruang Co-Working Space & Startup Incubator",
+    "Lapangan Olahraga (futsal, basket, badminton)",
+    "Klinik Kesehatan Kampus",
+    "Mushola dan ruang ibadah",
+    "Kantin dan food court",
+    "Asrama mahasiswa (kapasitas 200 orang)"
+  ],
+  "contacts": {
+    "admissions_phone": "021-7890-1234",
+    "admissions_whatsapp": "0812-3456-7890",
+    "admissions_email": "admisi@luminara.ac.id",
+    "general_email": "info@luminara.ac.id",
+    "office_hours": "Senin-Jumat 08:00-16:00 WIB, Sabtu 09:00-13:00 WIB",
+    "address": "Jl. Pendidikan No. 100, Kebayoran Baru, Jakarta Selatan 12180"
+  },
+  "faq": [
+    {
+      "question": "Apakah bisa daftar secara online?",
+      "answer": "Ya, seluruh proses pendaftaran bisa dilakukan secara online melalui portal.luminara.ac.id. Dokumen diunggah dalam format digital."
+    },
+    {
+      "question": "Kapan pengumuman hasil seleksi?",
+      "answer": "Hasil seleksi diumumkan 7-14 hari kerja setelah tes melalui email dan portal pendaftaran."
+    },
+    {
+      "question": "Apakah bisa pindah jurusan?",
+      "answer": "Pindah jurusan dimungkinkan setelah semester 2, dengan syarat IPK minimal 3.00 dan persetujuan kedua fakultas."
+    },
+    {
+      "question": "Apakah ada program magang?",
+      "answer": "Ya, semua program studi memiliki program magang wajib di semester 6-7, bekerja sama dengan 100+ perusahaan mitra."
+    },
+    {
+      "question": "Bagaimana cara pembayaran UKT?",
+      "answer": "Pembayaran melalui virtual account (BCA, Mandiri, BNI, BRI). Tersedia cicilan hingga 3x per semester."
+    }
+  ]
+}
