@@ -1,30 +1,36 @@
 """
-Admin Chat Monitor API — view conversations and manual intervention.
+Admin Chat Monitor API — view conversations, reasoning logs, and manual intervention.
 """
 import uuid
 import json
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from backend.models.message import AdminReply
 from backend.database.connection import get_db
+from backend.services.lead_service import LeadService
 from backend.config import MIN_CONFIDENCE_THRESHOLD
 
 router = APIRouter()
+lead_service = LeadService()
 
 
 @router.get("/conversations")
 async def list_conversations():
-    """List all active conversations with preview and urgency."""
+    """List all active conversations with preview, classification, and urgency."""
     conn = get_db()
     cursor = conn.cursor()
     
     cursor.execute("""
         SELECT 
             l.id as lead_id,
-            COALESCE(l.name, l.session_id) as lead_name,
+            l.name as lead_name,
+            l.email,
             l.urgency,
             l.funnel_stage,
             l.contact_type,
+            l.macro_intent,
+            l.micro_intent,
+            l.lead_source,
             m_last.content as last_message_preview,
             m_last.created_at as last_timestamp,
             m_last.intent_confidence,
@@ -45,7 +51,6 @@ async def list_conversations():
     conversations = []
     for row in cursor.fetchall():
         conv = dict(row)
-        # Truncate preview
         if conv.get("last_message_preview"):
             conv["last_message_preview"] = conv["last_message_preview"][:80]
         conv["needs_review"] = bool(conv.get("needs_review", 0))
@@ -57,7 +62,7 @@ async def list_conversations():
 
 @router.get("/conversations/{lead_id}")
 async def get_conversation_detail(lead_id: str):
-    """Get full chat history for a specific lead."""
+    """Get full chat history with reasoning traces for a specific lead."""
     conn = get_db()
     cursor = conn.cursor()
     
@@ -70,8 +75,8 @@ async def get_conversation_detail(lead_id: str):
     
     # Get all messages
     cursor.execute("""
-        SELECT id, direction, content, language, intent, intent_confidence,
-               sentiment, processing_log, created_at
+        SELECT id, direction, content, language, macro_intent, micro_intent,
+               intent_confidence, sentiment, processing_log, created_at
         FROM messages 
         WHERE lead_id = ? 
         ORDER BY created_at ASC
@@ -91,7 +96,6 @@ async def get_conversation_detail(lead_id: str):
         if msg["direction"] == "inbound":
             msg["sender"] = "user"
         else:
-            # Check if admin reply
             log = msg.get("processing_log", {})
             if isinstance(log, dict) and log.get("source") == "admin_manual":
                 msg["sender"] = "admin"
@@ -114,7 +118,6 @@ async def admin_reply(lead_id: str, reply: AdminReply):
     conn = get_db()
     cursor = conn.cursor()
     
-    # Verify lead exists
     cursor.execute("SELECT id FROM leads WHERE id = ?", (lead_id,))
     if not cursor.fetchone():
         conn.close()
@@ -141,3 +144,9 @@ async def admin_reply(lead_id: str, reply: AdminReply):
     conn.close()
     
     return {"message_id": message_id, "timestamp": now}
+
+
+@router.get("/events")
+async def get_new_events(since: str = Query(None)):
+    """Get count of new events since timestamp (for toast notifications)."""
+    return lead_service.get_new_events_count(since)

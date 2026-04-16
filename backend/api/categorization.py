@@ -8,111 +8,78 @@ from backend.database.connection import get_db
 router = APIRouter()
 
 
-@router.get("/categorization")
-async def get_categorization(
-    intent: Optional[str] = Query(None),
-    funnel_stage: Optional[str] = Query(None),
+@router.get("/messages")
+async def get_categorized_messages(
+    macro_intent: Optional[str] = Query(None),
+    micro_intent: Optional[str] = Query(None),
     urgency: Optional[str] = Query(None),
-    sentiment: Optional[str] = Query(None),
-    confidence_min: Optional[float] = Query(None),
-    confidence_max: Optional[float] = Query(None),
-    date_from: Optional[str] = Query(None),
-    date_to: Optional[str] = Query(None),
-    search: Optional[str] = Query(None),
-    sort_by: Optional[str] = Query("created_at"),
-    sort_order: Optional[str] = Query("desc"),
+    funnel_stage: Optional[str] = Query(None),
+    sort_by: str = Query("created_at"),
+    sort_dir: str = Query("desc"),
     page: int = Query(1, ge=1),
-    limit: int = Query(50, ge=1, le=200)
+    limit: int = Query(20, ge=1, le=100),
 ):
-    """Get filtered and sorted messages for categorization table."""
+    """Get messages with filtering and sorting for categorization table."""
     conn = get_db()
     cursor = conn.cursor()
     
     where_clauses = ["m.direction = 'inbound'"]
     params = []
     
-    if intent:
-        where_clauses.append("m.intent = ?")
-        params.append(intent)
-    if funnel_stage:
-        where_clauses.append("l.funnel_stage = ?")
-        params.append(funnel_stage)
+    if macro_intent:
+        where_clauses.append("m.macro_intent = ?")
+        params.append(macro_intent)
+    if micro_intent:
+        where_clauses.append("m.micro_intent = ?")
+        params.append(micro_intent)
     if urgency:
         where_clauses.append("l.urgency = ?")
         params.append(urgency)
-    if sentiment:
-        where_clauses.append("m.sentiment = ?")
-        params.append(sentiment)
-    if confidence_min is not None:
-        where_clauses.append("m.intent_confidence >= ?")
-        params.append(confidence_min)
-    if confidence_max is not None:
-        where_clauses.append("m.intent_confidence <= ?")
-        params.append(confidence_max)
-    if date_from:
-        where_clauses.append("m.created_at >= ?")
-        params.append(date_from)
-    if date_to:
-        where_clauses.append("m.created_at <= ?")
-        params.append(date_to)
-    if search:
-        where_clauses.append("(COALESCE(l.name, l.session_id) LIKE ? OR m.content LIKE ?)")
-        params.extend([f"%{search}%", f"%{search}%"])
+    if funnel_stage:
+        where_clauses.append("l.funnel_stage = ?")
+        params.append(funnel_stage)
     
-    where_sql = "WHERE " + " AND ".join(where_clauses)
+    where_sql = " AND ".join(where_clauses)
     
-    # Validate sort column
-    valid_sort = {
+    # Whitelist sort columns
+    allowed_sorts = {
         "created_at": "m.created_at",
-        "timestamp": "m.created_at",
-        "sender": "COALESCE(l.name, l.session_id)",
-        "intent": "m.intent",
-        "funnel_stage": "l.funnel_stage",
+        "macro_intent": "m.macro_intent",
+        "micro_intent": "m.micro_intent",
         "urgency": "l.urgency",
-        "sentiment": "m.sentiment",
-        "confidence": "m.intent_confidence",
+        "funnel_stage": "l.funnel_stage",
+        "name": "l.name",
     }
-    sort_col = valid_sort.get(sort_by, "m.created_at")
-    sort_dir = "ASC" if sort_order.lower() == "asc" else "DESC"
+    sort_col = allowed_sorts.get(sort_by, "m.created_at")
+    sort_direction = "ASC" if sort_dir.lower() == "asc" else "DESC"
     
-    # Count total
     count_query = f"""
-        SELECT COUNT(*) as total 
-        FROM messages m 
-        JOIN leads l ON m.lead_id = l.id 
-        {where_sql}
+        SELECT COUNT(*) as total
+        FROM messages m JOIN leads l ON m.lead_id = l.id
+        WHERE {where_sql}
     """
     cursor.execute(count_query, params)
     total = cursor.fetchone()["total"]
     
-    # Get data
     offset = (page - 1) * limit
-    data_query = f"""
-        SELECT 
-            m.id,
-            m.created_at as timestamp,
-            COALESCE(l.name, SUBSTR(l.session_id, 1, 8)) as sender,
-            SUBSTR(m.content, 1, 80) as message_preview,
-            m.intent,
-            l.funnel_stage,
-            l.urgency,
-            m.sentiment,
-            m.intent_confidence as confidence,
-            l.id as lead_id
+    query = f"""
+        SELECT m.id, m.lead_id, m.content, m.language, m.macro_intent, m.micro_intent,
+               m.intent_confidence, m.created_at,
+               l.name, l.email, l.urgency, l.funnel_stage, l.lead_source, l.contact_type
         FROM messages m
         JOIN leads l ON m.lead_id = l.id
-        {where_sql}
-        ORDER BY {sort_col} {sort_dir}
+        WHERE {where_sql}
+        ORDER BY {sort_col} {sort_direction}
         LIMIT ? OFFSET ?
     """
     params.extend([limit, offset])
-    cursor.execute(data_query, params)
+    cursor.execute(query, params)
     
-    data = [dict(row) for row in cursor.fetchall()]
+    messages = [dict(row) for row in cursor.fetchall()]
     conn.close()
     
     return {
-        "data": data,
+        "data": messages,
         "total": total,
         "page": page,
         "limit": limit,
@@ -120,77 +87,57 @@ async def get_categorization(
     }
 
 
-@router.get("/categorization/stats")
-async def get_categorization_stats(
-    intent: Optional[str] = Query(None),
-    funnel_stage: Optional[str] = Query(None),
-    urgency: Optional[str] = Query(None),
-    sentiment: Optional[str] = Query(None),
-    confidence_min: Optional[float] = Query(None),
-    confidence_max: Optional[float] = Query(None),
-    date_from: Optional[str] = Query(None),
-    date_to: Optional[str] = Query(None),
-    search: Optional[str] = Query(None),
-):
-    """Get aggregated stats for charts — respects same filters as categorization table."""
+@router.get("/chart-data")
+async def get_chart_data():
+    """Get aggregated chart data for visualizations."""
     conn = get_db()
     cursor = conn.cursor()
     
-    where_clauses = ["m.direction = 'inbound'"]
-    params = []
+    # Macro intent distribution
+    cursor.execute("""
+        SELECT macro_intent, COUNT(*) as count
+        FROM messages WHERE direction = 'inbound' AND macro_intent IS NOT NULL
+        GROUP BY macro_intent
+    """)
+    intent_dist = {row["macro_intent"]: row["count"] for row in cursor.fetchall()}
     
-    if intent:
-        where_clauses.append("m.intent = ?")
-        params.append(intent)
-    if funnel_stage:
-        where_clauses.append("l.funnel_stage = ?")
-        params.append(funnel_stage)
-    if urgency:
-        where_clauses.append("l.urgency = ?")
-        params.append(urgency)
-    if sentiment:
-        where_clauses.append("m.sentiment = ?")
-        params.append(sentiment)
-    if confidence_min is not None:
-        where_clauses.append("m.intent_confidence >= ?")
-        params.append(confidence_min)
-    if confidence_max is not None:
-        where_clauses.append("m.intent_confidence <= ?")
-        params.append(confidence_max)
-    if date_from:
-        where_clauses.append("m.created_at >= ?")
-        params.append(date_from)
-    if date_to:
-        where_clauses.append("m.created_at <= ?")
-        params.append(date_to)
-    if search:
-        where_clauses.append("(COALESCE(l.name, l.session_id) LIKE ? OR m.content LIKE ?)")
-        params.extend([f"%{search}%", f"%{search}%"])
-    
-    where_sql = "WHERE " + " AND ".join(where_clauses)
-    base_join = f"FROM messages m JOIN leads l ON m.lead_id = l.id {where_sql}"
-    
-    # Intent distribution
-    cursor.execute(f"SELECT m.intent, COUNT(*) as count {base_join} AND m.intent IS NOT NULL GROUP BY m.intent ORDER BY count DESC", params)
-    intent_distribution = {row["intent"]: row["count"] for row in cursor.fetchall()}
+    # Micro intent distribution
+    cursor.execute("""
+        SELECT micro_intent, COUNT(*) as count
+        FROM messages WHERE direction = 'inbound' AND micro_intent IS NOT NULL
+        GROUP BY micro_intent
+    """)
+    micro_dist = {row["micro_intent"]: row["count"] for row in cursor.fetchall()}
     
     # Funnel distribution
-    cursor.execute(f"SELECT l.funnel_stage, COUNT(DISTINCT l.id) as count {base_join} GROUP BY l.funnel_stage", params)
-    funnel_distribution = {row["funnel_stage"]: row["count"] for row in cursor.fetchall()}
+    cursor.execute("SELECT funnel_stage, COUNT(*) as count FROM leads GROUP BY funnel_stage")
+    funnel_dist = [{"stage": row["funnel_stage"], "count": row["count"]} for row in cursor.fetchall()]
     
-    # Urgency breakdown
-    cursor.execute(f"SELECT l.urgency, COUNT(DISTINCT l.id) as count {base_join} GROUP BY l.urgency", params)
-    urgency_breakdown = {row["urgency"]: row["count"] for row in cursor.fetchall()}
+    # Urgency distribution
+    cursor.execute("SELECT urgency, COUNT(*) as count FROM leads GROUP BY urgency")
+    urgency_dist = {row["urgency"]: row["count"] for row in cursor.fetchall()}
     
-    # Volume timeline (by date)
-    cursor.execute(f"SELECT DATE(m.created_at) as date, COUNT(*) as count {base_join} GROUP BY DATE(m.created_at) ORDER BY date ASC", params)
-    volume_timeline = [{"date": row["date"], "count": row["count"]} for row in cursor.fetchall()]
+    # Lead source distribution
+    cursor.execute("SELECT lead_source, COUNT(*) as count FROM leads GROUP BY lead_source")
+    source_dist = {row["lead_source"]: row["count"] for row in cursor.fetchall()}
+    
+    # Recent message volume (last 7 days by day)
+    cursor.execute("""
+        SELECT DATE(created_at) as day, COUNT(*) as count
+        FROM messages WHERE direction = 'inbound'
+        GROUP BY DATE(created_at)
+        ORDER BY day DESC
+        LIMIT 7
+    """)
+    daily_volume = [{"date": row["day"], "count": row["count"]} for row in cursor.fetchall()][::-1]
     
     conn.close()
     
     return {
-        "intent_distribution": intent_distribution,
-        "funnel_distribution": funnel_distribution,
-        "urgency_breakdown": urgency_breakdown,
-        "volume_timeline": volume_timeline
+        "macro_intent_distribution": intent_dist,
+        "micro_intent_distribution": micro_dist,
+        "funnel": funnel_dist,
+        "urgency_distribution": urgency_dist,
+        "source_distribution": source_dist,
+        "daily_volume": daily_volume,
     }

@@ -1,5 +1,6 @@
-/* Lead Table Component */
+/* Lead Table — funnel chart — processing log combined component */
 function createLeadTable(data) { return ''; }
+
 /* Funnel Chart Component */
 function createFunnelChart(container, data) {
   if (!data || !data.funnel) return;
@@ -17,22 +18,25 @@ function createFunnelChart(container, data) {
                y: { ticks: { color: '#a0a0b8' }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true } } }
   });
 }
+
 /* Processing Log Component */
 function createProcessingLog(logData) {
   const container = document.createElement('div');
   container.className = 'processing-log';
   let steps = [];
-  if (typeof logData === 'string') { try { steps = JSON.parse(logData).steps || []; } catch(e) {} }
-  else if (logData && logData.steps) { steps = logData.steps; }
+  if (typeof logData === 'string') { try { steps = JSON.parse(logData).reasoning_trace || []; } catch(e) {} }
+  else if (logData && logData.reasoning_trace) { steps = logData.reasoning_trace; }
   steps.forEach(step => {
     const el = document.createElement('div');
-    el.className = 'log-step';
-    const conf = step.confidence || 0;
-    const confClass = conf >= 0.8 ? 'high' : conf >= 0.6 ? 'medium' : 'low';
-    el.innerHTML = `<div class="step-name">${step.order || ''}. ${step.step || ''}</div>
-      <div class="step-result">Hasil: ${typeof step.result === 'object' ? JSON.stringify(step.result) : step.result || '-'}</div>
-      <div class="step-reasoning">${step.reasoning || ''}</div>
-      ${step.confidence != null ? `<div class="confidence-bar"><div class="fill ${confClass}" style="width:${conf*100}%"></div></div>` : ''}`;
+    el.className = 'agent-step';
+    el.innerHTML = `
+      <div class="agent-name">${step.agent || ''}</div>
+      <div class="react-label thought">💭 Thought</div>
+      <div class="react-content">${step.thought || '-'}</div>
+      <div class="react-label action">⚡ Action</div>
+      <div class="react-content">${step.action || '-'}</div>
+      ${step.confidence != null ? `<div class="confidence-bar"><div class="fill ${step.confidence >= 0.8 ? 'high' : step.confidence >= 0.6 ? 'medium' : 'low'}" style="width:${step.confidence*100}%"></div></div>` : ''}
+    `;
     container.appendChild(el);
   });
   return container;

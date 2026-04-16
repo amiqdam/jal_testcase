@@ -1,112 +1,155 @@
-/* User Chatbot Page */
-function renderChatbot(app) {
-  const sessionId = getOrCreateSessionId();
-  let messagesData = [];
-  let quickStartShown = false;
+/* Chatbot Page — User-facing chat with onboarding form */
+function renderChatbot() {
+  const app = document.getElementById('app');
+  const stored = JSON.parse(localStorage.getItem('jal_user') || 'null');
+
+  if (!stored) {
+    renderOnboarding(app);
+    return;
+  }
 
   app.innerHTML = `
     <div class="chat-container">
       <div class="chat-header">
         <div class="avatar">🎓</div>
         <div class="info">
-          <h2>JAL Admissions</h2>
-          <p>Online • Universitas Luminara</p>
+          <h2>JAL University</h2>
+          <p>AI Asisten Admisi • Online</p>
         </div>
       </div>
-      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="Ketik pesan..." autocomplete="off" />
-        <button id="chat-send">Kirim</button>
+        <input type="text" id="chatInput" placeholder="Ketik pertanyaan..." autocomplete="off">
+        <button id="chatSend">Kirim</button>
       </div>
-    </div>`;
+    </div>
+  `;
 
-  const messagesEl = document.getElementById('chat-messages');
-  const inputEl = document.getElementById('chat-input');
-  const sendBtn = document.getElementById('chat-send');
+  const messagesEl = document.getElementById('chatMessages');
+  const inputEl = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('chatSend');
 
   // Welcome message
-  const welcomeMsg = { direction: 'outbound', content: 'Selamat datang di JAL Admissions! 🎓\nSaya AI asisten Universitas Luminara. Pilih topik di bawah atau langsung ketik pertanyaan Anda.', created_at: new Date().toISOString() };
-  messagesEl.appendChild(createChatBubble(welcomeMsg));
+  const welcome = createChatBubble({ direction: 'outbound', content: `Halo ${stored.name}! 👋\nSelamat datang di JAL University.\nAda yang bisa saya bantu tentang pendaftaran, program studi, beasiswa, atau informasi kampus?`, created_at: new Date().toISOString() });
+  messagesEl.appendChild(welcome);
 
-  // Quick-start options
-  const quickStart = createQuickStartOptions(async (option) => {
-    quickStartShown = true;
-    await sendMessage(option.message, option.intent);
-  });
-  messagesEl.appendChild(quickStart);
+  // Quick start options
+  fetch('/api/dashboard/config')
+    .then(r => r.json())
+    .then(config => {
+      const qs = createQuickStartOptions(config.quick_start_options || [], (opt) => {
+        sendMessage(opt.message, opt.micro_intent);
+        qs.remove();
+      });
+      messagesEl.appendChild(qs);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    });
 
-  async function sendMessage(content, quickStartIntent) {
+  async function sendMessage(content, quickIntent) {
     if (!content.trim()) return;
-
-    // Remove quick-start if still visible
-    const qs = document.getElementById('quick-start-options');
-    if (qs) qs.remove();
-
-    // Show user message
-    const userMsg = { direction: 'inbound', content, created_at: new Date().toISOString() };
-    messagesEl.appendChild(createChatBubble(userMsg));
-    
     inputEl.value = '';
-    inputEl.disabled = true;
-    sendBtn.disabled = true;
 
-    // Show typing indicator
-    messagesEl.appendChild(createTypingIndicator());
-    scrollToBottom();
+    // User bubble
+    messagesEl.appendChild(createChatBubble({ direction: 'inbound', content, created_at: new Date().toISOString() }));
+
+    // Typing indicator
+    const typing = document.createElement('div');
+    typing.className = 'typing-indicator';
+    typing.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    messagesEl.appendChild(typing);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
 
     try {
-      const body = { session_id: sessionId, content };
-      if (quickStartIntent) body.quick_start_intent = quickStartIntent;
+      const body = { email: stored.email, name: stored.name, content };
+      if (quickIntent) body.quick_start_intent = quickIntent;
+      if (stored.lead_source) body.lead_source = stored.lead_source;
 
       const res = await fetch('/api/chat/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
       const data = await res.json();
+      typing.remove();
 
-      // Remove typing indicator
-      const typing = document.getElementById('typing-indicator');
-      if (typing) typing.remove();
-
-      // Show AI response
-      const aiMsg = { direction: 'outbound', content: data.response, created_at: new Date().toISOString() };
-      messagesEl.appendChild(createChatBubble(aiMsg));
-    } catch (err) {
-      const typing = document.getElementById('typing-indicator');
-      if (typing) typing.remove();
-      const errorMsg = { direction: 'outbound', content: 'Maaf, terjadi kesalahan. Silakan coba lagi. 🙏', created_at: new Date().toISOString() };
-      messagesEl.appendChild(createChatBubble(errorMsg));
+      messagesEl.appendChild(createChatBubble({
+        direction: 'outbound', content: data.response || data.detail || 'Maaf, terjadi kesalahan.',
+        created_at: new Date().toISOString()
+      }));
+    } catch(e) {
+      typing.remove();
+      messagesEl.appendChild(createChatBubble({
+        direction: 'outbound', content: 'Maaf, koneksi terputus. Silakan coba lagi.',
+        created_at: new Date().toISOString()
+      }));
     }
-
-    inputEl.disabled = false;
-    sendBtn.disabled = false;
-    inputEl.focus();
-    scrollToBottom();
+    messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
   sendBtn.onclick = () => sendMessage(inputEl.value);
-  inputEl.onkeydown = (e) => {
-    if (e.key === 'Enter') sendMessage(inputEl.value);
-    // Remove quick-start on typing
-    if (!quickStartShown) {
-      const qs = document.getElementById('quick-start-options');
-      if (qs && inputEl.value.length > 0) qs.remove();
-    }
-  };
-
-  function scrollToBottom() {
-    setTimeout(() => { messagesEl.scrollTop = messagesEl.scrollHeight; }, 50);
-  }
-
-  scrollToBottom();
+  inputEl.onkeydown = (e) => { if (e.key === 'Enter') sendMessage(inputEl.value); };
 }
 
-function getOrCreateSessionId() {
-  let sid = localStorage.getItem('jal_session_id');
-  if (!sid) {
-    sid = 'sess-' + Math.random().toString(36).slice(2, 10);
-    localStorage.setItem('jal_session_id', sid);
+function renderOnboarding(app) {
+  app.innerHTML = `
+    <div class="onboarding-overlay">
+      <div class="onboarding-card">
+        <h2>JAL University 🎓</h2>
+        <p>Selamat datang! Sebelum mulai, isi data berikut ya.</p>
+        <div class="form-group">
+          <label>Nama Lengkap</label>
+          <input type="text" id="obName" placeholder="Masukkan nama kamu">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="obEmail" placeholder="email@contoh.com">
+        </div>
+        <div class="form-group">
+          <label>Dapet informasi JAL University darimana?</label>
+          <div class="source-grid" id="sourceGrid"></div>
+        </div>
+        <button class="btn-start" id="obStart" disabled>Mulai Chat 🚀</button>
+      </div>
+    </div>
+  `;
+
+  const sources = [
+    { id: 'formulir_pendaftaran', label: '📋 Formulir Pendaftaran' },
+    { id: 'media_sosial', label: '📱 Media Sosial' },
+    { id: 'website', label: '🌐 Website' },
+    { id: 'event', label: '🎓 Event' },
+    { id: 'referral', label: '👥 Referral' },
+    { id: 'lainnya', label: '📌 Lainnya' },
+  ];
+
+  const grid = document.getElementById('sourceGrid');
+  let selectedSource = '';
+  sources.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'source-option';
+    btn.textContent = s.label;
+    btn.onclick = () => {
+      grid.querySelectorAll('.source-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedSource = s.id;
+      checkForm();
+    };
+    grid.appendChild(btn);
+  });
+
+  const nameEl = document.getElementById('obName');
+  const emailEl = document.getElementById('obEmail');
+  const startBtn = document.getElementById('obStart');
+
+  function checkForm() {
+    startBtn.disabled = !(nameEl.value.trim() && emailEl.value.trim() && selectedSource);
   }
-  return sid;
+  nameEl.oninput = checkForm;
+  emailEl.oninput = checkForm;
+
+  startBtn.onclick = () => {
+    const user = { name: nameEl.value.trim(), email: emailEl.value.trim().toLowerCase(), lead_source: selectedSource };
+    localStorage.setItem('jal_user', JSON.stringify(user));
+    renderChatbot();
+  };
 }

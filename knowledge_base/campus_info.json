@@ -1,12 +1,26 @@
 {
   "university": {
-    "name": "Universitas Luminara",
-    "tagline": "Membentuk Pemimpin Masa Depan",
+    "name": "JAL University",
+    "short_name": "JAL",
+    "tagline": "Membentuk Pemimpin Digital Masa Depan",
     "accreditation": "Unggul (A)",
     "location": "Jakarta Selatan",
     "founded": 2005,
-    "website": "https://luminara.ac.id",
-    "description": "Universitas Luminara adalah perguruan tinggi swasta terkemuka yang berfokus pada pengembangan kompetensi berbasis teknologi dan inovasi. Dengan fasilitas modern dan kurikulum yang relevan dengan industri, Luminara menyiapkan lulusan yang siap bersaing di era digital."
+    "website": "https://jal.ac.id",
+    "description": "JAL University adalah perguruan tinggi swasta terkemuka di bawah naungan JAL Group, berfokus pada pengembangan kompetensi berbasis teknologi dan inovasi. Dengan fasilitas modern, kurikulum yang relevan dengan industri, dan jaringan alumni yang kuat, JAL University menyiapkan lulusan yang siap bersaing di era digital.",
+    "vision": "Menjadi universitas inovatif terdepan di Asia Tenggara yang menghasilkan pemimpin berkarakter dan berdaya saing global.",
+    "mission": [
+      "Menyelenggarakan pendidikan tinggi berkualitas dengan kurikulum berbasis industri",
+      "Mengembangkan riset yang berdampak nyata bagi masyarakat",
+      "Membangun ekosistem kewirausahaan dan inovasi",
+      "Membentuk lulusan berkarakter, adaptif, dan berdaya saing global"
+    ],
+    "total_students": 8500,
+    "total_faculty": 320,
+    "student_faculty_ratio": "1:26",
+    "graduation_rate": "94%",
+    "average_gpa": 3.42,
+    "employment_rate_6_months": "91%"
   },
   "programs": [
     {
@@ -21,7 +35,24 @@
       "career_prospects": ["Software Engineer", "Data Scientist", "AI Engineer", "Cybersecurity Analyst", "Cloud Architect", "CTO / Tech Lead"],
       "tuition_per_semester": 12500000,
       "registration_fee": 5000000,
-      "curriculum_highlights": ["AI & Machine Learning", "Cloud Computing", "Cybersecurity", "Full-Stack Development", "DevOps & MLOps", "Capstone Industry Project"]
+      "curriculum_highlights": ["AI & Machine Learning", "Cloud Computing", "Cybersecurity", "Full-Stack Development", "DevOps & MLOps", "Capstone Industry Project"],
+      "curriculum_per_semester": {
+        "1": ["Algoritma & Pemrograman", "Kalkulus I", "Fisika Dasar", "Bahasa Inggris Akademik", "Pengantar Teknologi Informasi"],
+        "2": ["Struktur Data", "Kalkulus II", "Matematika Diskrit", "Basis Data", "Pemrograman Web Dasar"],
+        "3": ["Pemrograman Berorientasi Objek", "Sistem Operasi", "Jaringan Komputer", "Statistika", "UI/UX Fundamentals"],
+        "4": ["Rekayasa Perangkat Lunak", "Sistem Basis Data Lanjut", "Kecerdasan Buatan", "Mobile Development", "Etika Profesi"],
+        "5": ["Machine Learning", "Cloud Computing", "Keamanan Siber", "Big Data Analytics", "Pilihan Konsentrasi I"],
+        "6": ["Deep Learning", "DevOps & MLOps", "Blockchain Fundamentals", "Pilihan Konsentrasi II", "Magang Industri"],
+        "7": ["Full-Stack Development Lanjut", "IoT & Edge Computing", "Pilihan Konsentrasi III", "Seminar Tugas Akhir"],
+        "8": ["Tugas Akhir / Skripsi", "Capstone Industry Project"]
+      },
+      "notable_lecturers": [
+        {"name": "Prof. Dr. Andi Wijaya, M.Sc.", "expertise": "Artificial Intelligence & Natural Language Processing", "achievement": "Top 2% Scientist Indonesia (Scopus)"},
+        {"name": "Dr. Lisa Hartono, M.T.", "expertise": "Cybersecurity & Cryptography", "achievement": "Certified Ethical Hacker, Google Developer Expert"},
+        {"name": "Dr. Reza Faisal, M.Kom.", "expertise": "Cloud Architecture & Distributed Systems", "achievement": "AWS Solutions Architect Professional, ex-Tokopedia"}
+      ],
+      "industry_partners": ["Google Indonesia", "Tokopedia", "Gojek", "AWS", "Microsoft", "Telkom Indonesia"],
+      "concentrations": ["AI & Data Science", "Cybersecurity", "Cloud & DevOps", "Full-Stack Engineering"]
     },
     {
       "id": "si",
@@ -35,7 +66,23 @@
       "career_prospects": ["Business Analyst", "IT Consultant", "ERP Specialist", "Project Manager", "Data Analyst", "System Integrator"],
       "tuition_per_semester": 11000000,
       "registration_fee": 5000000,
-      "curriculum_highlights": ["Enterprise Systems (ERP/CRM)", "Business Intelligence", "Database Management", "IT Project Management", "Digital Transformation", "Industry Internship"]
+      "curriculum_highlights": ["Enterprise Systems (ERP/CRM)", "Business Intelligence", "Database Management", "IT Project Management", "Digital Transformation", "Industry Internship"],
+      "curriculum_per_semester": {
+        "1": ["Pengantar Sistem Informasi", "Algoritma Dasar", "Pengantar Bisnis", "Kalkulus", "Bahasa Inggris Akademik"],
+        "2": ["Basis Data", "Pemrograman Web", "Akuntansi Dasar", "Statistika Bisnis", "Komunikasi Profesional"],
+        "3": ["Analisis & Desain Sistem", "Manajemen Organisasi", "Jaringan Komputer", "Pemrograman Berorientasi Objek", "E-Business"],
+        "4": ["Enterprise Resource Planning", "Business Intelligence & Analytics", "Manajemen Proyek IT", "Sistem Informasi Manajemen", "Etika Profesi"],
+        "5": ["Digital Transformation Strategy", "Data Warehousing", "IT Governance & Audit", "Cloud Computing for Business", "Pilihan Konsentrasi I"],
+        "6": ["CRM & Customer Analytics", "IT Service Management", "Pilihan Konsentrasi II", "Magang Industri"],
+        "7": ["Inovasi & Kewirausahaan Digital", "Pilihan Konsentrasi III", "Seminar Tugas Akhir"],
+        "8": ["Tugas Akhir / Skripsi", "Capstone Business Project"]
+      },
+      "notable_lecturers": [
+        {"name": "Dr. Siti Rahayu, M.M.", "expertise": "Digital Transformation & ERP Systems", "achievement": "SAP Certified Consultant, ex-Deloitte"},
+        {"name": "Dr. Bambang Priono, M.Kom.", "expertise": "Business Intelligence & Data Analytics", "achievement": "Tableau Certified, Google Analytics Expert"}
+      ],
+      "industry_partners": ["SAP Indonesia", "Deloitte", "Accenture", "BCA", "Pertamina", "Unilever Indonesia"],
+      "concentrations": ["Business Analytics", "Enterprise Systems", "Digital Business"]
     },
     {
       "id": "manajemen",
@@ -49,7 +96,23 @@
       "career_prospects": ["Marketing Manager", "Financial Analyst", "HR Manager", "Entrepreneur", "Management Consultant", "Brand Strategist"],
       "tuition_per_semester": 10000000,
       "registration_fee": 4500000,
-      "curriculum_highlights": ["Digital Marketing", "Financial Management", "Entrepreneurship", "Strategic Management", "Organizational Behavior", "Business Case Competition"]
+      "curriculum_highlights": ["Digital Marketing", "Financial Management", "Entrepreneurship", "Strategic Management", "Organizational Behavior", "Business Case Competition"],
+      "curriculum_per_semester": {
+        "1": ["Pengantar Manajemen", "Ekonomi Mikro", "Matematika Bisnis", "Bahasa Inggris Bisnis", "Pengantar Akuntansi"],
+        "2": ["Ekonomi Makro", "Statistika Bisnis", "Perilaku Organisasi", "Hukum Bisnis", "Pengantar IT untuk Bisnis"],
+        "3": ["Manajemen Pemasaran", "Manajemen Keuangan", "Manajemen SDM", "Operasi & Rantai Pasok", "Kewirausahaan"],
+        "4": ["Digital Marketing", "Manajemen Investasi", "Leadership & Team Building", "Riset Bisnis", "Etika Bisnis"],
+        "5": ["Strategi Bisnis", "Brand Management", "Financial Technology", "Pilihan Konsentrasi I", "Business Case Competition"],
+        "6": ["International Business", "Pilihan Konsentrasi II", "Business Plan Workshop", "Magang Industri"],
+        "7": ["Inovasi & Design Thinking", "Pilihan Konsentrasi III", "Seminar Tugas Akhir"],
+        "8": ["Tugas Akhir / Skripsi", "Capstone Business Project"]
+      },
+      "notable_lecturers": [
+        {"name": "Prof. Dr. Herman Tanaka, MBA", "expertise": "Strategic Management & Entrepreneurship", "achievement": "Founder 3 startup, ex-McKinsey"},
+        {"name": "Dr. Maya Indah, M.M.", "expertise": "Digital Marketing & Brand Strategy", "achievement": "Google Certified Trainer, TedX Speaker"}
+      ],
+      "industry_partners": ["Unilever", "P&G Indonesia", "Bank Mandiri", "Grab", "Shopee", "McKinsey"],
+      "concentrations": ["Digital Marketing", "Finance & Investment", "Entrepreneurship"]
     },
     {
       "id": "psikologi",
@@ -63,7 +126,23 @@
       "career_prospects": ["Psikolog Klinis", "HR Specialist", "UX Researcher", "Counselor", "Educational Psychologist", "Organizational Development Consultant"],
       "tuition_per_semester": 11500000,
       "registration_fee": 4500000,
-      "curriculum_highlights": ["Clinical Psychology", "Industrial-Organizational Psychology", "Psychometric Assessment", "Counseling Techniques", "Research Methods", "Practicum & Supervised Practice"]
+      "curriculum_highlights": ["Clinical Psychology", "Industrial-Organizational Psychology", "Psychometric Assessment", "Counseling Techniques", "Research Methods", "Practicum & Supervised Practice"],
+      "curriculum_per_semester": {
+        "1": ["Pengantar Psikologi", "Biopsikologi", "Filsafat Ilmu", "Statistika Dasar", "Bahasa Inggris Akademik"],
+        "2": ["Psikologi Perkembangan", "Psikologi Sosial", "Metodologi Penelitian", "Psikologi Kepribadian", "Psikologi Kognitif"],
+        "3": ["Psikometri & Asesmen", "Psikologi Abnormal", "Psikologi Pendidikan", "Psikologi Industri & Organisasi", "Teknik Wawancara"],
+        "4": ["Konstruksi Alat Ukur Psikologi", "Psikoterapi", "Psikologi Konseling", "Psikologi Komunitas", "Etika Profesi Psikologi"],
+        "5": ["Intervensi Klinis", "Psikologi Forensik", "UX Research & Design Thinking", "Pilihan Konsentrasi I", "Praktikum Asesmen"],
+        "6": ["Psikologi Positif", "Neuropsikologi", "Pilihan Konsentrasi II", "Magang/Praktikum Lapangan"],
+        "7": ["Supervised Practice", "Pilihan Konsentrasi III", "Seminar Tugas Akhir"],
+        "8": ["Tugas Akhir / Skripsi", "Comprehensive Examination"]
+      },
+      "notable_lecturers": [
+        {"name": "Prof. Dr. Diana Sari, M.Psi.", "expertise": "Clinical Psychology & Psychotherapy", "achievement": "Certified Clinical Psychologist, 500+ hours supervised practice"},
+        {"name": "Dr. Agus Santoso, M.Psi.", "expertise": "Industrial-Organizational Psychology", "achievement": "HRBP Certified, ex-Head of Talent Astra International"}
+      ],
+      "industry_partners": ["RS Jiwa Dr. Soeharto Heerdjan", "Astra International", "Prodia", "Kalbe Farma", "Yayasan Pulih"],
+      "concentrations": ["Clinical Psychology", "Industrial-Organizational Psychology", "Educational Psychology"]
     },
     {
       "id": "dkv",
@@ -77,7 +156,23 @@
       "career_prospects": ["Graphic Designer", "UI/UX Designer", "Motion Graphics Artist", "Art Director", "Brand Designer", "Creative Director"],
       "tuition_per_semester": 13000000,
       "registration_fee": 5000000,
-      "curriculum_highlights": ["UI/UX Design", "Motion Graphics", "Brand Identity", "Typography", "3D Modeling", "Portfolio & Exhibition"]
+      "curriculum_highlights": ["UI/UX Design", "Motion Graphics", "Brand Identity", "Typography", "3D Modeling", "Portfolio & Exhibition"],
+      "curriculum_per_semester": {
+        "1": ["Nirmana (Dasar Desain)", "Menggambar I", "Sejarah Seni & Desain", "Tipografi Dasar", "Fotografi Dasar"],
+        "2": ["Desain Grafis I", "Menggambar II", "Warna & Komposisi", "Digital Illustration", "Bahasa Inggris Kreatif"],
+        "3": ["Desain Grafis II", "UI/UX Design Fundamentals", "Motion Graphics I", "Brand Identity Design", "Desain Kemasan"],
+        "4": ["UI/UX Design Advanced", "Motion Graphics II", "3D Modeling & Rendering", "Advertising Design", "Etika Profesi"],
+        "5": ["Interactive Media Design", "Video Production", "Visual Storytelling", "Pilihan Konsentrasi I", "Portfolio Development"],
+        "6": ["Environmental & Spatial Design", "Pilihan Konsentrasi II", "Design Sprint Workshop", "Magang Studio/Agency"],
+        "7": ["Design Business & Freelancing", "Pilihan Konsentrasi III", "Seminar Tugas Akhir"],
+        "8": ["Pameran Tugas Akhir", "Capstone Design Project"]
+      },
+      "notable_lecturers": [
+        {"name": "Budi Setiawan, M.Ds.", "expertise": "Brand Identity & Visual Storytelling", "achievement": "Founder Studio Budi, Red Dot Design Award Winner"},
+        {"name": "Rina Chairani, M.Ds.", "expertise": "UI/UX Design & Interaction Design", "achievement": "ex-Lead Designer Bukalapak, Google UX Certificate Mentor"}
+      ],
+      "industry_partners": ["Dentsu Indonesia", "Ogilvy", "Tokopedia Design", "Bukalapak", "Kompas Gramedia"],
+      "concentrations": ["UI/UX & Digital Product", "Motion & Multimedia", "Brand & Advertising"]
     }
   ],
   "scholarships": [
@@ -116,7 +211,7 @@
     },
     {
       "id": "beasiswa_internal",
-      "name": "Beasiswa Luminara Berprestasi",
+      "name": "Beasiswa JAL Berprestasi",
       "type": "combined",
       "discount_range": "30-75%",
       "requirements": [
@@ -124,7 +219,7 @@
         "Atlet berprestasi tingkat provinsi/nasional",
         "Hafiz Al-Quran minimal 15 juz",
         "Aktif dalam organisasi sosial/kemahasiswaan dengan bukti",
-        "Lolos seleksi wawancara beasiswa Luminara"
+        "Lolos seleksi wawancara beasiswa JAL"
       ],
       "coverage": "Potongan biaya kuliah 30-75% tergantung prestasi non-akademik",
       "quota": 30,
@@ -168,9 +263,9 @@
       ]
     },
     "steps": [
-      "1. Isi formulir pendaftaran online di portal.luminara.ac.id",
-      "2. Upload dokumen persyaratan (format PDF/JPG)",
-      "3. Bayar biaya pendaftaran melalui virtual account",
+      "1. Isi formulir pendaftaran online di portal.jal.ac.id",
+      "2. Upload dokumen persyaratan (format PDF/JPG, max 5MB per file)",
+      "3. Bayar biaya pendaftaran melalui virtual account (BCA/Mandiri/BNI/BRI)",
       "4. Ikuti tes seleksi (Tes Potensi Akademik + Wawancara)",
       "5. Cek pengumuman hasil seleksi (7-14 hari setelah tes)",
       "6. Jika lolos, lakukan daftar ulang dan bayar biaya semester pertama"
@@ -178,45 +273,149 @@
     "fee": 350000,
     "test_schedule": "Setiap Sabtu, pukul 09:00 WIB (sesuai gelombang pendaftaran)"
   },
-  "facilities": [
-    "Laboratorium Komputer (4 ruang, 160 PC)",
-    "Studio Desain Digital (Mac Lab + Wacom)",
-    "Perpustakaan Digital (24/7 akses e-library)",
-    "Ruang Co-Working Space & Startup Incubator",
-    "Lapangan Olahraga (futsal, basket, badminton)",
-    "Klinik Kesehatan Kampus",
-    "Mushola dan ruang ibadah",
-    "Kantin dan food court",
-    "Asrama mahasiswa (kapasitas 200 orang)"
+  "facilities": {
+    "academic": [
+      "Laboratorium Komputer (4 ruang, 160 PC, Intel i7/RTX 3060)",
+      "Studio Desain Digital (Mac Lab 40 unit + Wacom Cintiq Pro)",
+      "Perpustakaan: 25.000 judul buku + akses e-library 24/7 (Springer, IEEE, ScienceDirect)",
+      "Lab Psikologi (ruang observasi, ruang tes individual, lab biopsikologi)",
+      "Ruang Seminar & Auditorium (kapasitas 500 orang)"
+    ],
+    "technology": [
+      "WiFi kampus 1 Gbps di seluruh area",
+      "Cloud computing lab (AWS Academy, GCP, Azure)",
+      "IoT & Embedded Systems Lab",
+      "Recording Studio & Podcast Room"
+    ],
+    "student_life": [
+      "Co-Working Space & Startup Incubator (24/7 access)",
+      "Student Lounge & Gaming Corner",
+      "Kantin & Food Court (7 tenant, halal certified)",
+      "Lapangan Olahraga (futsal, basket, badminton, tennis meja)",
+      "Fitness Center",
+      "Klinik Kesehatan Kampus (dokter umum + psikolog)",
+      "Mushola dan ruang ibadah multi-agama"
+    ]
+  },
+  "dormitory": {
+    "name": "Asrama Mahasiswa JAL Residence",
+    "capacity": 200,
+    "room_types": [
+      {"type": "Single Room", "price_per_month": 2500000, "facilities": "AC, WiFi, meja belajar, lemari, kamar mandi dalam"},
+      {"type": "Twin Sharing", "price_per_month": 1500000, "facilities": "AC, WiFi, meja belajar, lemari, kamar mandi dalam (berbagi 2 orang)"},
+      {"type": "Quad Room", "price_per_month": 900000, "facilities": "AC, WiFi, meja belajar, lemari, kamar mandi luar (berbagi 4 orang)"}
+    ],
+    "common_facilities": ["Ruang belajar bersama", "Dapur bersama", "Laundry room", "CCTV 24 jam", "Security 24 jam", "Shuttle bus ke kampus"],
+    "registration": "Pendaftaran via portal.jal.ac.id → Menu Asrama → Pilih tipe kamar → Bayar deposit 1 bulan"
+  },
+  "campus_life": {
+    "student_organizations": [
+      {"name": "BEM (Badan Eksekutif Mahasiswa)", "category": "Organisasi", "members": 150},
+      {"name": "DPM (Dewan Perwakilan Mahasiswa)", "category": "Organisasi", "members": 50},
+      {"name": "JAL Coding Club", "category": "UKM Akademik", "members": 120},
+      {"name": "JAL Debate Society", "category": "UKM Akademik", "members": 60},
+      {"name": "JAL Design Lab", "category": "UKM Kreatif", "members": 80},
+      {"name": "JAL Photography", "category": "UKM Kreatif", "members": 45},
+      {"name": "JAL Music & Band", "category": "UKM Seni", "members": 70},
+      {"name": "JAL Futsal", "category": "UKM Olahraga", "members": 55},
+      {"name": "JAL Basketball", "category": "UKM Olahraga", "members": 40},
+      {"name": "JAL Volunteer Corps", "category": "UKM Sosial", "members": 90},
+      {"name": "JAL Islamic Studies", "category": "UKM Keagamaan", "members": 85},
+      {"name": "JAL Entrepreneur Club", "category": "UKM Bisnis", "members": 100}
+    ],
+    "annual_events": [
+      {"name": "JAL Week (Orientasi Mahasiswa Baru)", "month": "September", "description": "Kegiatan orientasi 1 minggu: pengenalan kampus, fakultas, UKM, dan budaya JAL"},
+      {"name": "JAL Hackathon", "month": "November", "description": "Kompetisi coding 48 jam dengan total hadiah Rp 50 juta, terbuka untuk umum"},
+      {"name": "JAL Career Fair", "month": "Maret", "description": "Pameran karir dengan 50+ perusahaan mitra, termasuk sesi walk-in interview"},
+      {"name": "JAL Art & Design Exhibition", "month": "Mei", "description": "Pameran karya mahasiswa DKV dan seni, terbuka untuk publik"},
+      {"name": "JAL Graduation Ceremony", "month": "Oktober", "description": "Wisuda di JAL Convention Center, dihadiri 2000+ tamu undangan"},
+      {"name": "Dies Natalis JAL University", "month": "Agustus", "description": "Perayaan ulang tahun kampus dengan berbagai lomba dan pertunjukan"}
+    ]
+  },
+  "alumni_stories": [
+    {
+      "name": "Andi Prasetyo",
+      "program": "Teknik Informatika",
+      "graduation_year": 2019,
+      "current_position": "Senior Software Engineer @ Google Singapore",
+      "quote": "JAL University memberikan fondasi kuat di bidang AI dan software engineering. Capstone project bersama industri membuat saya siap kerja dari hari pertama."
+    },
+    {
+      "name": "Sari Wulandari",
+      "program": "Manajemen",
+      "graduation_year": 2020,
+      "current_position": "Co-Founder & CEO, FreshBox (startup F&B)",
+      "quote": "Program kewirausahaan di JAL bukan cuma teori — saya sudah membangun MVP dan mendapatkan investor seed pertama saya saat masih mahasiswa semester 6."
+    },
+    {
+      "name": "David Chen",
+      "program": "Sistem Informasi",
+      "graduation_year": 2018,
+      "current_position": "IT Consultant @ Deloitte Indonesia",
+      "quote": "Pengalaman magang di perusahaan mitra JAL membuka pintu karir saya. Kurikulum ERP dan Business Intelligence sangat relevan dengan pekerjaan saya sekarang."
+    },
+    {
+      "name": "Nadia Putri",
+      "program": "Desain Komunikasi Visual",
+      "graduation_year": 2021,
+      "current_position": "Lead UI/UX Designer @ Tokopedia",
+      "quote": "Studio desain JAL dengan peralatan Mac dan Wacom profesional membuat saya bisa membangun portfolio berkualitas industri sejak semester 3."
+    }
   ],
+  "academic_calendar": {
+    "semester_1": {
+      "start": "September",
+      "orientation": "Minggu 1-2 September",
+      "mid_exam": "November (minggu ke-2)",
+      "final_exam": "Januari (minggu ke-2-3)",
+      "end": "Januari"
+    },
+    "semester_2": {
+      "start": "Februari",
+      "mid_exam": "April (minggu ke-2)",
+      "final_exam": "Juni (minggu ke-2-3)",
+      "end": "Juni"
+    },
+    "summer_program": "Juli - Agustus (opsional: magang, KKN, atau mata kuliah pendek)",
+    "academic_year": "September 2026 - Juni 2027"
+  },
+  "student_portal": {
+    "url": "portal.jal.ac.id",
+    "features": [
+      "KRS Online (pengisian Kartu Rencana Studi)",
+      "Lihat jadwal kuliah & ujian",
+      "Cek nilai & transkrip",
+      "Bayar UKT via virtual account",
+      "Request surat keterangan mahasiswa aktif",
+      "Konsultasi dosen wali online",
+      "Notifikasi info akademik & event"
+    ],
+    "login": "Email JAL (@student.jal.ac.id) + password yang dikirim saat daftar ulang"
+  },
   "contacts": {
     "admissions_phone": "021-7890-1234",
     "admissions_whatsapp": "0812-3456-7890",
-    "admissions_email": "admisi@luminara.ac.id",
-    "general_email": "info@luminara.ac.id",
+    "admissions_email": "admisi@jal.ac.id",
+    "general_email": "info@jal.ac.id",
     "office_hours": "Senin-Jumat 08:00-16:00 WIB, Sabtu 09:00-13:00 WIB",
-    "address": "Jl. Pendidikan No. 100, Kebayoran Baru, Jakarta Selatan 12180"
+    "address": "Jl. Pendidikan No. 100, Kebayoran Baru, Jakarta Selatan 12180",
+    "social_media": {
+      "instagram": "@jal.university",
+      "tiktok": "@jal.university",
+      "youtube": "JAL University Official",
+      "linkedin": "JAL University"
+    }
   },
   "faq": [
-    {
-      "question": "Apakah bisa daftar secara online?",
-      "answer": "Ya, seluruh proses pendaftaran bisa dilakukan secara online melalui portal.luminara.ac.id. Dokumen diunggah dalam format digital."
-    },
-    {
-      "question": "Kapan pengumuman hasil seleksi?",
-      "answer": "Hasil seleksi diumumkan 7-14 hari kerja setelah tes melalui email dan portal pendaftaran."
-    },
-    {
-      "question": "Apakah bisa pindah jurusan?",
-      "answer": "Pindah jurusan dimungkinkan setelah semester 2, dengan syarat IPK minimal 3.00 dan persetujuan kedua fakultas."
-    },
-    {
-      "question": "Apakah ada program magang?",
-      "answer": "Ya, semua program studi memiliki program magang wajib di semester 6-7, bekerja sama dengan 100+ perusahaan mitra."
-    },
-    {
-      "question": "Bagaimana cara pembayaran UKT?",
-      "answer": "Pembayaran melalui virtual account (BCA, Mandiri, BNI, BRI). Tersedia cicilan hingga 3x per semester."
-    }
+    {"question": "Apakah bisa daftar secara online?", "answer": "Ya, seluruh proses pendaftaran bisa dilakukan secara online melalui portal.jal.ac.id. Dokumen diunggah dalam format digital (PDF/JPG, max 5MB per file)."},
+    {"question": "Kapan pengumuman hasil seleksi?", "answer": "Hasil seleksi diumumkan 7-14 hari kerja setelah tes melalui email dan portal pendaftaran."},
+    {"question": "Apakah bisa pindah jurusan?", "answer": "Pindah jurusan dimungkinkan setelah semester 2, dengan syarat IPK minimal 3.00 dan persetujuan kedua fakultas. Harus mengajukan surat permohonan ke Bagian Akademik."},
+    {"question": "Apakah ada program magang?", "answer": "Ya, semua program studi memiliki program magang wajib di semester 6-7, bekerja sama dengan 100+ perusahaan mitra. Magang berlangsung 3-6 bulan."},
+    {"question": "Bagaimana cara pembayaran UKT?", "answer": "Pembayaran melalui virtual account (BCA, Mandiri, BNI, BRI). Tersedia cicilan hingga 3x per semester. Hubungi bagian keuangan untuk pengajuan cicilan."},
+    {"question": "Apakah ada kelas karyawan / malam?", "answer": "Saat ini JAL University hanya menyelenggarakan kelas reguler (Senin-Jumat, 08:00-17:00). Kelas malam sedang dalam perencanaan untuk tahun akademik 2027/2028."},
+    {"question": "Berapa biaya asrama?", "answer": "Asrama JAL Residence tersedia mulai Rp 900.000/bulan (Quad Room) hingga Rp 2.500.000/bulan (Single Room). Fasilitas lengkap termasuk AC, WiFi, dan security 24 jam."},
+    {"question": "Apakah ijazah SMK bisa diterima?", "answer": "Tentu bisa! Lulusan SMK sangat diterima, terutama untuk program yang relevan dengan keahlian sebelumnya. Banyak lulusan SMK yang sukses di JAL University."},
+    {"question": "Bagaimana cara klaim beasiswa?", "answer": "Pengajuan beasiswa dilakukan saat pendaftaran online. Upload dokumen pendukung (rapor, sertifikat, SKTM). Hasil seleksi beasiswa diumumkan bersamaan dengan hasil tes masuk."},
+    {"question": "Apakah ada shuttle bus?", "answer": "Ya, tersedia shuttle bus dari asrama ke kampus utama setiap 15 menit pada jam perkuliahan. Shuttle ke stasiun MRT Blok M juga tersedia."}
   ]
 }

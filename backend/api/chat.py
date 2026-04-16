@@ -24,8 +24,8 @@ def sanitize_input(content: str) -> str:
 @router.post("/send", response_model=MessageResponse)
 async def send_message(message: MessageCreate):
     """
-    Process a new chat message through the AI pipeline.
-    Accepts session_id, content, and optional quick_start_intent.
+    Process a new chat message through the LangGraph AI pipeline.
+    Accepts email, name, content, and optional quick_start_intent + lead_source.
     """
     # Validate input
     if not message.content or not message.content.strip():
@@ -40,6 +40,18 @@ async def send_message(message: MessageCreate):
             detail=f"Maaf, pesan terlalu panjang (maks {MAX_MESSAGE_LENGTH} karakter)."
         )
     
+    if not message.email or not message.email.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Email wajib diisi."
+        )
+    
+    if not message.name or not message.name.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Nama wajib diisi."
+        )
+    
     # Sanitize
     clean_content = sanitize_input(message.content)
     if not clean_content:
@@ -48,11 +60,13 @@ async def send_message(message: MessageCreate):
             detail="Maaf, pesan tidak valid. Silakan coba lagi."
         )
     
-    # Process through pipeline
+    # Process through LangGraph pipeline
     result = await processor.process(
-        session_id=message.session_id,
+        email=message.email.strip().lower(),
+        name=message.name.strip(),
         content=clean_content,
-        quick_start_intent=message.quick_start_intent
+        lead_source=message.lead_source,
+        quick_start_intent=message.quick_start_intent,
     )
     
     return MessageResponse(

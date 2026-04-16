@@ -1,5 +1,6 @@
 """
 LeadService — Business logic for lead management (CRUD + funnel rules).
+Email-based upsert to prevent duplicates.
 """
 import uuid
 import json
@@ -12,27 +13,33 @@ from backend.config import FUNNEL_STAGES
 class LeadService:
     """Business logic for lead management."""
     
-    def get_or_create_lead(self, session_id: str) -> dict:
-        """Get existing lead by session or create new one."""
+    def get_or_create_lead(self, email: str, name: str, lead_source: str = "lainnya") -> dict:
+        """Get existing lead by email or create new one (upsert)."""
         conn = get_db()
         cursor = conn.cursor()
         
-        cursor.execute("SELECT * FROM leads WHERE session_id = ?", (session_id,))
+        cursor.execute("SELECT * FROM leads WHERE email = ?", (email,))
         row = cursor.fetchone()
         
         if row:
             lead = dict(row)
+            # Update name if provided and different
+            if name and lead.get("name") != name:
+                cursor.execute("UPDATE leads SET name = ?, updated_at = ? WHERE id = ?",
+                               (name, datetime.now(timezone.utc).isoformat(), lead["id"]))
+                conn.commit()
+                lead["name"] = name
             conn.close()
             return lead
         
-        # Create new lead
+        # Create new lead — lead_source is set only on first creation (never overwritten)
         now = datetime.now(timezone.utc).isoformat()
         lead_id = str(uuid.uuid4())
         
         cursor.execute("""
-            INSERT INTO leads (id, session_id, created_at, updated_at)
-            VALUES (?, ?, ?, ?)
-        """, (lead_id, session_id, now, now))
+            INSERT INTO leads (id, email, name, lead_source, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (lead_id, email, name, lead_source or "lainnya", now, now))
         
         conn.commit()
         
@@ -49,7 +56,6 @@ class LeadService:
         conn = get_db()
         cursor = conn.cursor()
         
-        # Get current lead
         cursor.execute("SELECT * FROM leads WHERE id = ?", (lead_id,))
         lead = dict(cursor.fetchone())
         
@@ -63,6 +69,7 @@ class LeadService:
             "contact_type": "contact_type",
             "school_origin": "school_origin",
             "school_type": "school_type",
+            "kelas": "kelas",
             "interested_program": "interested_program",
             "nationality": "nationality",
             "academic_achievement": "academic_achievement",
@@ -71,11 +78,17 @@ class LeadService:
         
         for entity_key, db_column in field_mapping.items():
             new_value = entities.get(entity_key)
-            if new_value and new_value != "unknown" and new_value != "N/A":
+            if new_value and new_value != "unknown" and new_value != "N/A" and new_value != "null":
                 current_value = lead.get(db_column)
                 if not current_value or current_value == "unknown":
                     updates.append(f"{db_column} = ?")
                     params.append(new_value)
+        
+        # Handle umur (integer)
+        umur = entities.get("umur")
+        if umur and isinstance(umur, (int, float)) and not lead.get("umur"):
+            updates.append("umur = ?")
+            params.append(int(umur))
         
         # Handle financial_concern (boolean)
         if entities.get("financial_concern"):
@@ -91,17 +104,14 @@ class LeadService:
             cursor.execute(query, params)
             conn.commit()
         
-        # Return updated lead
         cursor.execute("SELECT * FROM leads WHERE id = ?", (lead_id,))
         updated_lead = dict(cursor.fetchone())
         conn.close()
         return updated_lead
     
-    def update_funnel_stage(self, lead_id: str, new_stage: str, new_urgency: str) -> dict:
-        """
-        Update lead's funnel stage and urgency.
-        Stage can only move forward (no backward), unless admin override.
-        """
+    def update_funnel_stage(self, lead_id: str, new_stage: str, new_urgency: str,
+                            macro_intent: str = None, micro_intent: str = None) -> dict:
+        """Update lead's funnel stage, urgency, and classification."""
         conn = get_db()
         cursor = conn.cursor()
         
@@ -112,16 +122,22 @@ class LeadService:
         # Only move forward in funnel
         current_idx = FUNNEL_STAGES.index(current_stage) if current_stage in FUNNEL_STAGES else 0
         new_idx = FUNNEL_STAGES.index(new_stage) if new_stage in FUNNEL_STAGES else 0
-        
         final_stage = new_stage if new_idx >= current_idx else current_stage
         
         now = datetime.now(timezone.utc).isoformat()
-        cursor.execute("""
-            UPDATE leads 
-            SET funnel_stage = ?, urgency = ?, updated_at = ?
-            WHERE id = ?
-        """, (final_stage, new_urgency, now, lead_id))
         
+        set_clauses = ["funnel_stage = ?", "urgency = ?", "updated_at = ?"]
+        params = [final_stage, new_urgency, now]
+        
+        if macro_intent:
+            set_clauses.append("macro_intent = ?")
+            params.append(macro_intent)
+        if micro_intent:
+            set_clauses.append("micro_intent = ?")
+            params.append(micro_intent)
+        
+        params.append(lead_id)
+        cursor.execute(f"UPDATE leads SET {', '.join(set_clauses)} WHERE id = ?", params)
         conn.commit()
         
         cursor.execute("SELECT * FROM leads WHERE id = ?", (lead_id,))
@@ -130,7 +146,7 @@ class LeadService:
         return lead
     
     def get_leads_filtered(self, stage: str = None, urgency: str = None,
-                           intent: str = None, search: str = None,
+                           macro_intent: str = None, search: str = None,
                            page: int = 1, limit: int = 20) -> dict:
         """Get filtered and paginated list of leads with last message info."""
         conn = get_db()
@@ -145,18 +161,19 @@ class LeadService:
         if urgency:
             where_clauses.append("l.urgency = ?")
             params.append(urgency)
+        if macro_intent:
+            where_clauses.append("l.macro_intent = ?")
+            params.append(macro_intent)
         if search:
-            where_clauses.append("(l.name LIKE ? OR l.session_id LIKE ?)")
+            where_clauses.append("(l.name LIKE ? OR l.email LIKE ?)")
             params.extend([f"%{search}%", f"%{search}%"])
         
         where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
         
-        # Count total
         count_query = f"SELECT COUNT(*) as total FROM leads l {where_sql}"
         cursor.execute(count_query, params)
         total = cursor.fetchone()["total"]
         
-        # Get leads with last message
         offset = (page - 1) * limit
         query = f"""
             SELECT l.*, 
@@ -200,19 +217,16 @@ class LeadService:
         
         lead = dict(row)
         
-        # Get messages
         cursor.execute("""
             SELECT * FROM messages WHERE lead_id = ? ORDER BY created_at ASC
         """, (lead_id,))
         lead["messages"] = [dict(r) for r in cursor.fetchall()]
         
-        # Get draft responses
         cursor.execute("""
             SELECT * FROM draft_responses WHERE lead_id = ? ORDER BY created_at DESC
         """, (lead_id,))
         lead["draft_responses"] = [dict(r) for r in cursor.fetchall()]
         
-        # Get next actions
         cursor.execute("""
             SELECT * FROM next_actions WHERE lead_id = ? ORDER BY created_at DESC
         """, (lead_id,))
@@ -228,24 +242,22 @@ class LeadService:
         
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         
-        # Total leads
         cursor.execute("SELECT COUNT(*) as total FROM leads")
         total = cursor.fetchone()["total"]
         
-        # New today
         cursor.execute("SELECT COUNT(*) as count FROM leads WHERE created_at LIKE ?", (f"{today}%",))
         new_today = cursor.fetchone()["count"]
         
-        # Per funnel stage
         cursor.execute("SELECT funnel_stage, COUNT(*) as count FROM leads GROUP BY funnel_stage")
         funnel_distribution = {row["funnel_stage"]: row["count"] for row in cursor.fetchall()}
         
-        # Per urgency
         cursor.execute("SELECT urgency, COUNT(*) as count FROM leads GROUP BY urgency")
         urgency_distribution = {row["urgency"]: row["count"] for row in cursor.fetchall()}
         
-        # Critical/high attention count
-        cursor.execute("SELECT COUNT(*) as count FROM leads WHERE urgency IN ('critical', 'high')")
+        cursor.execute("SELECT lead_source, COUNT(*) as count FROM leads GROUP BY lead_source")
+        source_distribution = {row["lead_source"]: row["count"] for row in cursor.fetchall()}
+        
+        cursor.execute("SELECT COUNT(*) as count FROM leads WHERE urgency = 'critical'")
         attention_count = cursor.fetchone()["count"]
         
         conn.close()
@@ -256,17 +268,44 @@ class LeadService:
             "attention_needed": attention_count,
             "funnel_distribution": funnel_distribution,
             "urgency_distribution": urgency_distribution,
+            "source_distribution": source_distribution,
+        }
+    
+    def get_new_events_count(self, since: str = None) -> dict:
+        """Get count of new events since timestamp (for toast notifications)."""
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        if not since:
+            since = datetime.now(timezone.utc).strftime("%Y-%m-%dT00:00:00")
+        
+        cursor.execute("SELECT COUNT(*) as count FROM leads WHERE created_at > ?", (since,))
+        new_leads = cursor.fetchone()["count"]
+        
+        cursor.execute("SELECT COUNT(*) as count FROM messages WHERE direction = 'inbound' AND created_at > ?", (since,))
+        new_messages = cursor.fetchone()["count"]
+        
+        cursor.execute("SELECT COUNT(*) as count FROM complaints_log WHERE status = 'open' AND created_at > ?", (since,))
+        new_complaints = cursor.fetchone()["count"]
+        
+        conn.close()
+        
+        return {
+            "new_leads": new_leads,
+            "new_messages": new_messages,
+            "new_complaints": new_complaints,
+            "total_new": new_leads + new_messages + new_complaints,
         }
     
     def admin_override(self, lead_id: str, updates: dict) -> Optional[dict]:
-        """Admin override for funnel_stage, urgency, etc."""
+        """Admin override for funnel_stage, urgency."""
         conn = get_db()
         cursor = conn.cursor()
         
         set_clauses = []
         params = []
         
-        for field in ["funnel_stage", "urgency", "assigned_counselor", "tags"]:
+        for field in ["funnel_stage", "urgency"]:
             if field in updates and updates[field] is not None:
                 set_clauses.append(f"{field} = ?")
                 params.append(updates[field])
@@ -287,3 +326,12 @@ class LeadService:
         lead = dict(cursor.fetchone())
         conn.close()
         return lead
+    
+    def export_leads_data(self) -> list:
+        """Export all leads as list of dicts (for Pandas DataFrame conversion)."""
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM leads ORDER BY created_at DESC")
+        leads = [dict(row) for row in cursor.fetchall()]
+        conn.close()
+        return leads

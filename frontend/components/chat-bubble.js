@@ -1,31 +1,29 @@
-/* Chat Bubble Component */
+/* Chat Bubble Component — User right, Bot left */
 function createChatBubble(message) {
   const bubble = document.createElement('div');
-  const isInbound = message.direction === 'inbound';
-  const isAdmin = message.sender === 'admin' || 
-    (message.processing_log && typeof message.processing_log === 'object' && message.processing_log.source === 'admin_manual');
-  
-  bubble.className = `chat-bubble ${isInbound ? 'inbound' : isAdmin ? 'admin-reply' : 'outbound'}`;
-  
-  let badgeHtml = '';
-  if (isAdmin && !isInbound) {
-    badgeHtml = '<span class="admin-badge">👤 Admin</span><br>';
+  const dir = message.direction || message.sender;
+  const isUser = (dir === 'inbound' || dir === 'user');
+  const isAdmin = (dir === 'admin' || message.sender === 'admin');
+
+  bubble.className = `chat-bubble ${isAdmin ? 'admin-reply' : isUser ? 'user' : 'bot'}`;
+
+  let html = '';
+  if (isAdmin) {
+    html += '<div class="admin-badge">👨‍💼 Admin</div>';
   }
-  
-  const time = message.created_at ? new Date(message.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
-  
-  // Convert markdown-like bold
-  let content = (message.content || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  content = content.replace(/\n/g, '<br>');
-  
-  bubble.innerHTML = `${badgeHtml}<span class="bubble-content">${content}</span><span class="timestamp">${time}</span>`;
+  html += `<div class="bubble-content">${formatContent(message.content || '')}</div>`;
+  if (message.created_at) {
+    const t = new Date(message.created_at);
+    html += `<span class="timestamp">${t.toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'})}</span>`;
+  }
+  bubble.innerHTML = html;
   return bubble;
 }
 
-function createTypingIndicator() {
-  const el = document.createElement('div');
-  el.className = 'typing-indicator';
-  el.id = 'typing-indicator';
-  el.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
-  return el;
+function formatContent(text) {
+  // Bold **text**
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Links
+  text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:var(--accent-secondary)">$1</a>');
+  return text;
 }

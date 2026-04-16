@@ -1,1 +1,1 @@
-/* Placeholder files for funnel-chart.js and processing-log.js — implementations in lead-table.js */
+/* funnel-chart — implementation in lead-table.js */

@@ -1,5 +1,5 @@
 """
-KnowledgeBase service — loads and queries campus information for LLM context injection.
+KnowledgeBase service — loads and queries JAL University information for LLM context injection.
 """
 import json
 import os
@@ -7,20 +7,19 @@ from typing import Optional
 
 
 class KnowledgeBase:
-    """Campus information provider for LLM context injection."""
+    """JAL University information provider for LLM context injection."""
     
     def __init__(self, data_path: str = None):
         if data_path is None:
-            # Resolve relative to project root
             base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
             data_path = os.path.join(base_dir, "knowledge_base", "campus_info.json")
         
         with open(data_path, "r", encoding="utf-8") as f:
             self.data = json.load(f)
     
-    def get_context(self, intent: str, program: str = None) -> str:
+    def get_context(self, micro_intent: str, program: str = None) -> str:
         """
-        Return relevant campus info based on detected intent.
+        Return relevant campus info based on detected micro intent.
         Used to inject into LLM prompt for accurate responses.
         """
         sections = []
@@ -29,19 +28,19 @@ class KnowledgeBase:
         uni = self.data["university"]
         sections.append(f"Universitas: {uni['name']} — {uni['tagline']}")
         sections.append(f"Akreditasi: {uni['accreditation']}, Lokasi: {uni['location']}")
+        sections.append(f"Total mahasiswa: {uni['total_students']}, Rasio dosen: {uni['student_faculty_ratio']}")
         
-        if intent in ("inquiry_prodi", "ambiguous"):
+        if micro_intent in ("academic_inquiry", "greeting_unclear"):
             if program:
                 prog_info = self.get_program_info(program)
                 if prog_info:
                     sections.append(self._format_program(prog_info))
                 else:
-                    # Return all programs summary
                     sections.append(self._format_all_programs_summary())
             else:
                 sections.append(self._format_all_programs_summary())
         
-        if intent in ("inquiry_biaya", "scholarship"):
+        if micro_intent == "financial_inquiry":
             if program:
                 prog_info = self.get_program_info(program)
                 if prog_info:
@@ -49,23 +48,23 @@ class KnowledgeBase:
                     sections.append(f"Biaya Pendaftaran: Rp {prog_info['registration_fee']:,}")
             sections.append(self._format_scholarships())
         
-        if intent == "registration":
+        if micro_intent == "registration_process":
             sections.append(self._format_registration())
         
-        if intent == "followup_status":
+        if micro_intent == "status_follow_up":
             contacts = self.data["contacts"]
             sections.append(f"Kontak Admisi: {contacts['admissions_phone']} | {contacts['admissions_email']}")
             sections.append(f"Jam Kerja: {contacts['office_hours']}")
         
-        if intent == "complaint":
+        if micro_intent in ("technical_issue", "general_complaint"):
             contacts = self.data["contacts"]
             sections.append(f"Hubungi langsung: {contacts['admissions_phone']} | WA: {contacts['admissions_whatsapp']}")
             sections.append(f"Email: {contacts['admissions_email']}")
         
-        if intent == "partnership":
-            contacts = self.data["contacts"]
-            sections.append(f"Kunjungan kampus / kerjasama: {contacts['admissions_email']}")
-            sections.append(f"Telepon: {contacts['admissions_phone']}")
+        if micro_intent == "general_inquiry":
+            sections.append(self._format_facilities())
+            sections.append(self._format_dormitory())
+            sections.append(self._format_campus_life())
         
         return "\n".join(sections)
     
@@ -75,7 +74,8 @@ class KnowledgeBase:
         for prog in self.data["programs"]:
             if (prog["id"].lower() == program_name_lower or
                 prog["name"].lower() == program_name_lower or
-                program_name_lower in prog["name"].lower()):
+                program_name_lower in prog["name"].lower() or
+                program_name_lower in prog["id"].lower()):
                 return prog
         return None
     
@@ -107,7 +107,7 @@ class KnowledgeBase:
     
     def _format_program(self, prog: dict) -> str:
         """Format a single program for LLM context."""
-        return (
+        text = (
             f"Program: {prog['name']} ({prog['degree']})\n"
             f"Fakultas: {prog['faculty']}\n"
             f"Akreditasi: {prog['accreditation']}\n"
@@ -117,6 +117,15 @@ class KnowledgeBase:
             f"Biaya: Rp {prog['tuition_per_semester']:,}/semester\n"
             f"Highlight Kurikulum: {', '.join(prog['curriculum_highlights'])}"
         )
+        # Add notable lecturers
+        if prog.get("notable_lecturers"):
+            text += "\nDosen Unggulan:"
+            for lec in prog["notable_lecturers"][:2]:
+                text += f"\n  - {lec['name']}: {lec['expertise']}"
+        # Add concentrations
+        if prog.get("concentrations"):
+            text += f"\nKonsentrasi: {', '.join(prog['concentrations'])}"
+        return text
     
     def _format_all_programs_summary(self) -> str:
         """Format summary of all programs."""
@@ -151,4 +160,40 @@ class KnowledgeBase:
         lines.append("Langkah Pendaftaran:")
         for step in reg["steps"]:
             lines.append(f"  {step}")
+        return "\n".join(lines)
+    
+    def _format_facilities(self) -> str:
+        """Format facilities information."""
+        fac = self.data.get("facilities", {})
+        lines = ["Fasilitas Kampus:"]
+        for category, items in fac.items():
+            lines.append(f"  {category.replace('_', ' ').title()}:")
+            for item in items[:3]:
+                lines.append(f"    - {item}")
+        return "\n".join(lines)
+    
+    def _format_dormitory(self) -> str:
+        """Format dormitory information."""
+        dorm = self.data.get("dormitory", {})
+        if not dorm:
+            return ""
+        lines = [f"Asrama: {dorm.get('name', 'Asrama Mahasiswa')} (kapasitas {dorm.get('capacity', 0)})"]
+        for room in dorm.get("room_types", []):
+            lines.append(f"  - {room['type']}: Rp {room['price_per_month']:,}/bulan — {room['facilities']}")
+        return "\n".join(lines)
+    
+    def _format_campus_life(self) -> str:
+        """Format campus life information."""
+        life = self.data.get("campus_life", {})
+        if not life:
+            return ""
+        orgs = life.get("student_organizations", [])
+        lines = [f"Kehidupan Kampus ({len(orgs)} organisasi/UKM):"]
+        for org in orgs[:5]:
+            lines.append(f"  - {org['name']} ({org['category']})")
+        events = life.get("annual_events", [])
+        if events:
+            lines.append("Event Tahunan:")
+            for ev in events[:3]:
+                lines.append(f"  - {ev['name']} ({ev['month']}): {ev['description'][:80]}")
         return "\n".join(lines)

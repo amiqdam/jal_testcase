@@ -12,18 +12,21 @@ class Message(BaseModel):
     direction: str  # "inbound" | "outbound"
     content: str
     language: Optional[str] = None
-    intent: Optional[str] = None
+    macro_intent: Optional[str] = None
+    micro_intent: Optional[str] = None
     intent_confidence: Optional[float] = None
     sentiment: Optional[str] = None
-    processing_log: Optional[str] = None  # JSON string
+    processing_log: Optional[str] = None  # JSON string with reasoning traces
     processing_time_ms: Optional[int] = None
     created_at: str = ""
 
 
 class MessageCreate(BaseModel):
     """Input schema for sending a new message."""
-    session_id: str
+    email: str
+    name: str
     content: str
+    lead_source: Optional[str] = None  # Only needed on first message
     quick_start_intent: Optional[str] = None
 
 
