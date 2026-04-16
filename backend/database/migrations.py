@@ -25,6 +25,8 @@ def run_migrations():
             interested_program TEXT,
             nationality     TEXT,
             academic_achievement TEXT,
+            phone_number    TEXT,
+            tanggal_lahir   TEXT,
             financial_concern INTEGER DEFAULT 0,
             lead_source     TEXT DEFAULT 'lainnya',
             macro_intent    TEXT,

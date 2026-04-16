@@ -12,6 +12,10 @@
       renderDashboard();
     } else if (hash === '#/admin/analytics') {
       renderAnalytics();
+    } else if (hash === '#/admin/database') {
+      renderDatabase();
+    } else if (hash === '#/admin/settings') {
+      renderSettings();
     } else if (hash.startsWith('#/admin/lead/')) {
       const leadId = hash.replace('#/admin/lead/', '');
       renderLeadDetail(leadId);

@@ -7,6 +7,8 @@ function renderAnalytics() {
       <a href="#/admin">💬 Chat Monitor</a>
       <a href="#/admin/dashboard">📊 Dashboard</a>
       <a href="#/admin/analytics" class="active">📈 Analytics</a>
+      <a href="#/admin/database">📋 Database</a>
+      <a href="#/admin/settings">⚙️ Settings</a>
     </nav>
     <div class="admin-categorization">
       <h1 style="font-size:24px;font-weight:700;margin-bottom:24px;">Analytics & Categorization</h1>
@@ -63,9 +65,13 @@ function renderAnalytics() {
   loadAnalyticsCharts();
 
   // Filter handlers
-  document.getElementById('filterMacro').onchange = () => loadCategorizedMessages(1);
-  document.getElementById('filterUrgency').onchange = () => loadCategorizedMessages(1);
-  document.getElementById('filterFunnel').onchange = () => loadCategorizedMessages(1);
+  const updateAnalytics = () => {
+    loadCategorizedMessages(1);
+    loadAnalyticsCharts();
+  };
+  document.getElementById('filterMacro').onchange = updateAnalytics;
+  document.getElementById('filterUrgency').onchange = updateAnalytics;
+  document.getElementById('filterFunnel').onchange = updateAnalytics;
 }
 
 async function loadCategorizedMessages(page) {
@@ -120,8 +126,19 @@ async function loadCategorizedMessages(page) {
 }
 
 async function loadAnalyticsCharts() {
+  const macro = document.getElementById('filterMacro').value;
+  const urgency = document.getElementById('filterUrgency').value;
+  const funnel = document.getElementById('filterFunnel').value;
+
+  let url = '/api/categorization/chart-data?';
+  const params = new URLSearchParams();
+  if (macro) params.append('macro_intent', macro);
+  if (urgency) params.append('urgency', urgency);
+  if (funnel) params.append('funnel_stage', funnel);
+  url += params.toString();
+
   try {
-    const res = await fetch('/api/categorization/chart-data');
+    const res = await fetch(url);
     const data = await res.json();
     const grid = document.getElementById('analyticsCharts');
     grid.innerHTML = '';

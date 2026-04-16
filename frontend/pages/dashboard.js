@@ -7,6 +7,8 @@ function renderDashboard() {
       <a href="#/admin">💬 Chat Monitor</a>
       <a href="#/admin/dashboard" class="active">📊 Dashboard</a>
       <a href="#/admin/analytics">📈 Analytics</a>
+      <a href="#/admin/database">📋 Database</a>
+      <a href="#/admin/settings">⚙️ Settings</a>
     </nav>
     <div class="dashboard-content" id="dashContent">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">

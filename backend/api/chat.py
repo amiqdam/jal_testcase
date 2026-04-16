@@ -94,3 +94,25 @@ async def get_conversation(lead_id: str):
         raise HTTPException(status_code=404, detail="Conversation not found")
     
     return {"lead_id": lead_id, "messages": messages}
+
+
+@router.get("/history/{email}")
+async def get_history_by_email(email: str):
+    """Get full conversation history by email including the lead ID."""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT id FROM leads WHERE email = ?", (email.lower(),))
+    lead = cursor.fetchone()
+    
+    if not lead:
+        conn.close()
+        return {"messages": [], "lead_id": None}
+        
+    lead_id = lead["id"]
+    cursor.execute("SELECT * FROM messages WHERE lead_id = ? ORDER BY created_at ASC", (lead_id,))
+    messages = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    
+    return {"lead_id": lead_id, "messages": messages}
+

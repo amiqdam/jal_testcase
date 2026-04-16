@@ -14,8 +14,35 @@ class KnowledgeBase:
             base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
             data_path = os.path.join(base_dir, "knowledge_base", "campus_info.json")
         
+        self._data_path = data_path
         with open(data_path, "r", encoding="utf-8") as f:
             self.data = json.load(f)
+    
+    def reload(self):
+        """Re-read the knowledge base file from disk."""
+        with open(self._data_path, "r", encoding="utf-8") as f:
+            self.data = json.load(f)
+    
+    def get_raw_data(self) -> dict:
+        """Return the raw JSON data for the admin editor."""
+        return self.data
+    
+    def update_section(self, section_key: str, data):
+        """Update a single section and write to disk."""
+        if section_key not in self.data:
+            raise KeyError(f"Section '{section_key}' not found")
+        self.data[section_key] = data
+        self._write_to_disk()
+    
+    def update_full(self, data: dict):
+        """Replace the entire knowledge base and write to disk."""
+        self.data = data
+        self._write_to_disk()
+    
+    def _write_to_disk(self):
+        """Write current data to the JSON file."""
+        with open(self._data_path, "w", encoding="utf-8") as f:
+            json.dump(self.data, f, ensure_ascii=False, indent=2)
     
     def get_context(self, micro_intent: str, program: str = None) -> str:
         """

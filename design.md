@@ -196,6 +196,8 @@ Sistem ini adalah platform AI end-to-end yang menerima pesan calon mahasiswa mel
 | **NBA Engine** | Processing | Tentukan next best action untuk tim admisi |
 | **Observability Logger** | Processing | Catat reasoning setiap step pipeline |
 | **Admin Dashboard** | Output | UI untuk tim admisi melihat leads & analytics |
+| **Database Viewer** | Output | UI untuk melihat data mentah leads secara lengkap |
+| **Settings / KB Editor** | Output/Config | Interface untuk mengubah data kampus & scenario chat |
 | **Knowledge Base** | Data | Info kampus (prodi, biaya, beasiswa) untuk LLM context |
 
 ---
@@ -215,6 +217,10 @@ jal_admissions_ai/
 │   │   ├── chat.py              # POST /api/chat/send, GET /api/chat/:leadId
 │   │   ├── leads.py             # GET /api/leads, GET /api/leads/:id
 │   │   ├── dashboard.py         # GET /api/dashboard/summary, funnel, analytics
+│   │   ├── admin_export.py      # GET /api/admin/export/leads/csv
+│   │   ├── admin_complaints.py  # Handle complaints routing
+│   │   ├── scenario.py          # GET/PUT /api/admin/scenarios/config
+│   │   ├── knowledge_base_api.py# API for KB editor
 │   │   └── responses.py         # POST /api/response/:id/approve, PATCH edit
 │   │
 │   ├── pipeline/

@@ -7,6 +7,8 @@ function renderAdminChat() {
       <a href="#/admin" class="active">💬 Chat Monitor</a>
       <a href="#/admin/dashboard">📊 Dashboard</a>
       <a href="#/admin/analytics">📈 Analytics</a>
+      <a href="#/admin/database">📋 Database</a>
+      <a href="#/admin/settings">⚙️ Settings</a>
     </nav>
     <div class="admin-layout" id="adminLayout">
       <div class="admin-chat-list" id="chatList">

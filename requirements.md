@@ -131,6 +131,8 @@ Sistem terdiri dari tiga lapisan: Input (chatbot WhatsApp-style), Processing (AI
 5. THE Admin Dashboard SHALL menyediakan kemampuan filter dan sort pada lead table berdasarkan funnel stage, urgency, intent, tanggal, dan assigned counselor.
 6. THE Admin Dashboard SHALL dapat dipahami oleh staf non-teknis tanpa penjelasan tambahan — menggunakan bahasa Indonesia, visualisasi yang intuitif, dan color-coding yang konsisten.
 7. THE draft response view SHALL memungkinkan admin untuk meng-approve, mengedit, atau menolak draft response sebelum dikirim ke calon mahasiswa.
+8. THE Admin Dashboard SHALL menyediakan halaman Database terpisah yang menampilkan data leads secara keseluruhan dengan fitur export CSV.
+9. THE Admin Dashboard SHALL menyediakan halaman Settings untuk mengubah scenario bot (channel, quick star) dan mengedit konten Knowledge Base secara visual tanpa modifikasi file lokal.
 
 
 ### Persyaratan 6: Knowledge Base & Data Kampus
@@ -143,7 +145,7 @@ Sistem terdiri dari tiga lapisan: Input (chatbot WhatsApp-style), Processing (AI
 2. THE KnowledgeBase SHALL menyimpan data minimal 3 jenis beasiswa: beasiswa prestasi, beasiswa bantuan finansial (KIP), dan beasiswa internal kampus, masing-masing dengan syarat, coverage, dan kuota.
 3. THE KnowledgeBase SHALL menyimpan informasi proses pendaftaran: gelombang intake, persyaratan umum dan internasional, tahapan pendaftaran, dan biaya pendaftaran.
 4. THE KnowledgeBase SHALL menyimpan kontak admisi (telepon, email, jam kerja) untuk digunakan dalam respons.
-5. THE KnowledgeBase SHALL dapat di-update tanpa mengubah kode — data disimpan dalam file JSON yang terpisah dari aplikasi.
+5. THE KnowledgeBase SHALL dapat di-update tanpa mengubah kode sumber langsung melalui Antarmuka Administrator (Settings KB Editor), dengan perubahan disimpan ke dalam JSON.
 6. THE LLMService SHALL menginjeksikan informasi KnowledgeBase yang relevan ke dalam prompt LLM berdasarkan intent yang terdeteksi, bukan seluruh data.
 
 
@@ -187,7 +189,10 @@ Sistem terdiri dari tiga lapisan: Input (chatbot WhatsApp-style), Processing (AI
 5. THE Backend SHALL menyediakan endpoint `GET /api/dashboard/summary` yang mengembalikan aggregated stats: total leads, distribusi per funnel stage, distribusi per urgency, dan leads baru hari ini.
 6. THE Backend SHALL menyediakan endpoint `GET /api/dashboard/funnel` yang mengembalikan data untuk funnel visualization.
 7. THE Backend SHALL menyediakan endpoint `POST /api/response/:id/approve` dan `PATCH /api/response/:id/edit` untuk admin mengelola draft responses.
-8. ALL API endpoints SHALL mengembalikan response dalam format JSON dengan HTTP status codes yang appropriate (200, 201, 400, 404, 500).
+8. THE Backend SHALL menyediakan endpoint untuk manajemen pengaturan dinamis: scenario AI (`/api/admin/scenarios/*`) dan Knowledge Base (`/api/admin/knowledge/*`).
+9. THE Backend SHALL menyediakan endpoint export data (`GET /api/admin/export/leads/csv`).
+10. THE Backend SHALL menyediakan endpoint untuk admin intervention spesifik (seperti complaint handling).
+11. ALL API endpoints SHALL mengembalikan response dalam format JSON dengan HTTP status codes yang appropriate (200, 201, 400, 404, 500).
 
 
 ### Persyaratan 10: Deployment & Setup

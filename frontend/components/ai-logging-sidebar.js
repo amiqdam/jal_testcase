@@ -5,14 +5,32 @@ function createAILoggingSidebar(messages) {
 
   const header = document.createElement('div');
   header.className = 'sidebar-header';
-  header.innerHTML = `<h3>🔍 AI Reasoning Log</h3>`;
+  header.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="header-icon">🔍</span>
+      <h3 class="header-title">AI Reasoning Log</h3>
+    </div>
+    <button class="minimize-btn" title="Minimize">▼</button>
+  `;
   sidebar.appendChild(header);
+
+  const contentWrapper = document.createElement('div');
+  contentWrapper.className = 'sidebar-content';
+  sidebar.appendChild(contentWrapper);
+
+  // Toggle behavior
+  const minimizeBtn = header.querySelector('.minimize-btn');
+  minimizeBtn.onclick = () => {
+    sidebar.classList.toggle('minimized');
+    const layout = document.getElementById('adminLayout');
+    if (layout) layout.classList.toggle('sidebar-minimized');
+  };
 
   if (!messages || messages.length === 0) {
     const empty = document.createElement('div');
     empty.style.cssText = 'color: var(--text-muted); font-size: var(--font-size-sm); text-align: center; padding: 40px 0;';
     empty.textContent = 'Pilih pesan untuk melihat AI reasoning log';
-    sidebar.appendChild(empty);
+    contentWrapper.appendChild(empty);
     return sidebar;
   }
 
@@ -38,7 +56,7 @@ function createAILoggingSidebar(messages) {
       ${processingLog.micro_intent ? `<span style="font-size:10px;color:var(--text-secondary)">${processingLog.micro_intent}</span>` : ''}
     </div>
   `;
-  sidebar.appendChild(msgInfo);
+  contentWrapper.appendChild(msgInfo);
 
   // Reasoning trace
   const traces = processingLog.reasoning_trace || [];
@@ -55,7 +73,7 @@ function createAILoggingSidebar(messages) {
       <div class="react-content">${step.observation || '-'}</div>
       ${step.confidence != null ? `<div style="margin-top:6px;"><div class="confidence-bar"><div class="fill ${step.confidence >= 0.8 ? 'high' : step.confidence >= 0.6 ? 'medium' : 'low'}" style="width:${step.confidence*100}%"></div></div><span class="confidence-inline">${(step.confidence*100).toFixed(0)}%</span></div>` : ''}
     `;
-    sidebar.appendChild(stepEl);
+    contentWrapper.appendChild(stepEl);
   });
 
   // Full log button
@@ -64,7 +82,7 @@ function createAILoggingSidebar(messages) {
     fullBtn.className = 'full-log-btn';
     fullBtn.textContent = '📋 Baca Full Logging';
     fullBtn.onclick = () => showFullLogModal(messages);
-    sidebar.appendChild(fullBtn);
+    contentWrapper.appendChild(fullBtn);
   }
 
   return sidebar;

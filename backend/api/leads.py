@@ -16,11 +16,18 @@ async def list_leads(
     urgency: Optional[str] = Query(None),
     macro_intent: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
+    lead_source: Optional[str] = Query(None),
+    interested_program: Optional[str] = Query(None),
+    school_type: Optional[str] = Query(None),
+    contact_type: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
 ):
     """Get filtered and paginated leads list."""
-    return lead_service.get_leads_filtered(stage, urgency, macro_intent, search, page, limit)
+    return lead_service.get_leads_filtered(
+        stage, urgency, macro_intent, search, page, limit,
+        lead_source, interested_program, school_type, contact_type
+    )
 
 
 @router.get("/{lead_id}")

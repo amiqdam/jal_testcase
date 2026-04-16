@@ -7,6 +7,8 @@ function renderLeadDetail(leadId) {
       <a href="#/admin">💬 Chat Monitor</a>
       <a href="#/admin/dashboard">📊 Dashboard</a>
       <a href="#/admin/analytics">📈 Analytics</a>
+      <a href="#/admin/database">📋 Database</a>
+      <a href="#/admin/settings">⚙️ Settings</a>
     </nav>
     <div class="lead-detail-layout">
       <div class="lead-profile-card" id="profileCard">Loading...</div>
@@ -33,6 +35,8 @@ async function loadLeadDetail(leadId) {
       </div>
       ${profileField('Email', lead.email)}
       ${profileField('Nama', lead.name)}
+      ${profileField('No HP', lead.phone_number)}
+      ${profileField('Tanggal Lahir', lead.tanggal_lahir)}
       ${profileField('Tipe Kontak', lead.contact_type)}
       ${profileField('Sumber Lead', lead.lead_source)}
       ${profileField('Sekolah Asal', lead.school_origin)}
@@ -94,8 +98,25 @@ async function loadLeadDetail(leadId) {
       if (typeof log === 'string') { try { log = JSON.parse(log); } catch(e) { log = {}; } }
       
       const section = document.createElement('div');
-      section.style.cssText = 'margin-bottom:20px;padding:16px;background:#121220;border-radius:12px;border:1px solid var(--border-color);';
-      section.innerHTML = `<div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:10px;">Pesan ${idx+1}: "${(msg.content||'').substring(0,80)}"</div>`;
+      section.style.cssText = 'margin-bottom:20px;background:#121220;border-radius:12px;border:1px solid var(--border-color);overflow:hidden;';
+      
+      const header = document.createElement('div');
+      header.style.cssText = 'padding:12px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:var(--bg-glass);';
+      header.innerHTML = `
+        <div style="font-size:13px;font-weight:600;color:var(--text-primary);">Pesan ${idx+1}: "${(msg.content||'').substring(0,80)}"</div>
+        <button class="minimize-btn" style="background:none;border:none;color:var(--text-muted);cursor:pointer;transform:rotate(180deg);transition:transform 0.2s;">▼</button>
+      `;
+
+      const content = document.createElement('div');
+      content.style.cssText = 'padding:16px;display:block;';
+      
+      header.onclick = () => {
+        const isHidden = content.style.display === 'none';
+        content.style.display = isHidden ? 'block' : 'none';
+        header.querySelector('.minimize-btn').style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+      };
+
+      section.appendChild(header);
 
       const traces = (log && log.reasoning_trace) || [];
       traces.forEach(step => {
@@ -111,8 +132,9 @@ async function loadLeadDetail(leadId) {
           <div class="react-content">${step.observation || '-'}</div>
           ${step.confidence != null ? `<div style="margin-top:4px;"><div class="confidence-bar"><div class="fill ${step.confidence >= 0.8 ? 'high' : step.confidence >= 0.6 ? 'medium' : 'low'}" style="width:${step.confidence*100}%"></div></div></div>` : ''}
         `;
-        section.appendChild(stepEl);
+        content.appendChild(stepEl);
       });
+      section.appendChild(content);
       detailContent.appendChild(section);
     });
 

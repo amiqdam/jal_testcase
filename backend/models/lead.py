@@ -21,6 +21,8 @@ class Lead(BaseModel):
     interested_program: Optional[str] = None
     nationality: Optional[str] = None
     academic_achievement: Optional[str] = None
+    phone_number: Optional[str] = None
+    tanggal_lahir: Optional[str] = None
     financial_concern: bool = False
     lead_source: str = "lainnya"
     macro_intent: Optional[str] = None

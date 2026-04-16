@@ -27,6 +27,37 @@ PERAN: Membantu calon mahasiswa, orang tua, dan guru BK dengan informasi yang ak
 5. **Gunakan emoji secukupnya (1-3 per respons)**
 6. **Gunakan bold (**text**) untuk highlight penting**
 
+## FUNNEL NUDGING STRATEGY:
+Kamu harus secara HALUS mendorong user untuk maju di funnel dan memberikan informasi tentang dirinya.
+Sesuaikan nudging berdasarkan funnel stage dan info profil yang BELUM terisi:
+
+1. **awareness** → Buat user tertarik. Di akhir jawaban, tanya salah satu:
+   - "Btw kak, dari sekolah mana nih?" (jika school_origin kosong)
+   - "Ada prodi yang paling menarik perhatian kak?" (jika interested_program kosong)
+   
+2. **interest** → Deepening interest. Tanya:
+   - "Kalau boleh tau kelas berapa sekarang kak?" (jika kelas kosong)
+   - "Mau tau lebih detail soal biaya dan beasiswa yang tersedia?" 
+   - "Ada prestasi akademik yang mau dishare?" (jika academic_achievement kosong)
+
+3. **consideration** → User sudah serius. Tanya:
+   - "Sudah bandingkan dengan kampus lain kak? Kalau mau, bisa dijadwalkan campus tour!"
+   - "Mau dijadwalkan sesi konsultasi dengan kakak alumni?"
+
+4. **decision** → Arahkan ke registration. Mulai kumpulkan data:
+   - "Untuk melanjutkan ke tahap pendaftaran, boleh minta info tambahannya ya kak..."
+   - Minta satu per satu secara natural: nomor HP, tanggal lahir
+   - JANGAN minta semua sekaligus! Max 1-2 data per pesan
+
+5. **enrolled** → Berikan info onboarding: portal mahasiswa, jadwal orientasi, info asrama
+
+PENTING untuk nudging:
+- Selipkan pertanyaan secara NATURAL di akhir respons, BUKAN sebagai form
+- Jangan paksa — jika user tidak mau jawab, JANGAN tanya lagi topik yang sama
+- SELALU jawab pertanyaan user DULU, baru nudge di akhir
+- Lihat profil user: JANGAN tanya info yang sudah ada (cek PROFIL USER di bawah)
+- Max 1 nudge question per respons
+
 ## GUARDRAIL:
 - HANYA jawab pertanyaan seputar JAL University (admisi, program studi, biaya, fasilitas, kehidupan kampus)
 - Jika pertanyaan di luar konteks universitas → jawab sopan: "Maaf, saya hanya bisa membantu dengan informasi seputar JAL University. Ada yang ingin ditanyakan tentang kampus kami? 😊"
@@ -36,7 +67,7 @@ PERAN: Membantu calon mahasiswa, orang tua, dan guru BK dengan informasi yang ak
 1. Sapaan personal
 2. Jawaban langsung dan jelas
 3. Informasi pendukung (jika relevan)
-4. Ajakan untuk bertanya lebih lanjut / CTA (Call to Action)
+4. Nudge question ATAU ajakan bertanya lebih lanjut / CTA
 
 OUTPUT: Hanya teks respons langsung (bukan JSON). Maksimal 300 kata.
 """
@@ -72,6 +103,36 @@ def response_agent(state: AdmissionState, llm) -> dict:
         personal_parts.append("⚠️ User punya kekhawatiran finansial — proaktif mention beasiswa!")
     if profile.get("school_type"):
         personal_parts.append(f"Tipe sekolah: {profile['school_type']}")
+    if profile.get("school_origin"):
+        personal_parts.append(f"Asal sekolah: {profile['school_origin']}")
+    if profile.get("kelas"):
+        personal_parts.append(f"Kelas: {profile['kelas']}")
+    if profile.get("phone_number"):
+        personal_parts.append(f"No HP: {profile['phone_number']}")
+    if profile.get("tanggal_lahir"):
+        personal_parts.append(f"Tanggal lahir: {profile['tanggal_lahir']}")
+    if profile.get("academic_achievement"):
+        personal_parts.append(f"Prestasi: {profile['academic_achievement']}")
+    
+    # Build missing info list for funnel nudging
+    missing_info = []
+    if not profile.get("school_origin"):
+        missing_info.append("school_origin")
+    if not profile.get("interested_program"):
+        missing_info.append("interested_program")
+    if not profile.get("kelas"):
+        missing_info.append("kelas")
+    if not profile.get("academic_achievement"):
+        missing_info.append("academic_achievement")
+    if not profile.get("phone_number"):
+        missing_info.append("phone_number")
+    if not profile.get("tanggal_lahir"):
+        missing_info.append("tanggal_lahir")
+    
+    if missing_info:
+        personal_parts.append(f"\n📋 INFO BELUM TERISI (bisa di-nudge): {', '.join(missing_info)}")
+    else:
+        personal_parts.append("\n✅ Profil user sudah lengkap — tidak perlu nudge data lagi")
     
     personal_text = "\n".join(personal_parts) if personal_parts else "Profil belum lengkap"
     

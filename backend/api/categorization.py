@@ -88,47 +88,85 @@ async def get_categorized_messages(
 
 
 @router.get("/chart-data")
-async def get_chart_data():
-    """Get aggregated chart data for visualizations."""
+async def get_chart_data(
+    macro_intent: Optional[str] = Query(None),
+    urgency: Optional[str] = Query(None),
+    funnel_stage: Optional[str] = Query(None),
+):
+    """Get aggregated chart data for visualizations with optional filters."""
     conn = get_db()
     cursor = conn.cursor()
     
-    # Macro intent distribution
-    cursor.execute("""
-        SELECT macro_intent, COUNT(*) as count
-        FROM messages WHERE direction = 'inbound' AND macro_intent IS NOT NULL
-        GROUP BY macro_intent
-    """)
-    intent_dist = {row["macro_intent"]: row["count"] for row in cursor.fetchall()}
+    # Build filter clauses dynamically for messages joining leads
+    where_clauses = ["m.direction = 'inbound'"]
+    params = []
+    
+    if macro_intent:
+        where_clauses.append("m.macro_intent = ?")
+        params.append(macro_intent)
+    if urgency:
+        where_clauses.append("l.urgency = ?")
+        params.append(urgency)
+    if funnel_stage:
+        where_clauses.append("l.funnel_stage = ?")
+        params.append(funnel_stage)
+        
+    where_sql = " AND ".join(where_clauses)
     
     # Micro intent distribution
-    cursor.execute("""
-        SELECT micro_intent, COUNT(*) as count
-        FROM messages WHERE direction = 'inbound' AND micro_intent IS NOT NULL
-        GROUP BY micro_intent
-    """)
+    cursor.execute(f"""
+        SELECT m.micro_intent, COUNT(*) as count
+        FROM messages m JOIN leads l ON m.lead_id = l.id
+        WHERE {where_sql} AND m.micro_intent IS NOT NULL
+        GROUP BY m.micro_intent
+    """, params)
     micro_dist = {row["micro_intent"]: row["count"] for row in cursor.fetchall()}
     
+    # Macro intent distribution
+    cursor.execute(f"""
+        SELECT m.macro_intent, COUNT(*) as count
+        FROM messages m JOIN leads l ON m.lead_id = l.id
+        WHERE {where_sql} AND m.macro_intent IS NOT NULL
+        GROUP BY m.macro_intent
+    """, params)
+    intent_dist = {row["macro_intent"]: row["count"] for row in cursor.fetchall()}
+    
     # Funnel distribution
-    cursor.execute("SELECT funnel_stage, COUNT(*) as count FROM leads GROUP BY funnel_stage")
+    cursor.execute(f"""
+        SELECT l.funnel_stage, COUNT(DISTINCT l.id) as count
+        FROM messages m JOIN leads l ON m.lead_id = l.id
+        WHERE {where_sql}
+        GROUP BY l.funnel_stage
+    """, params)
     funnel_dist = [{"stage": row["funnel_stage"], "count": row["count"]} for row in cursor.fetchall()]
     
     # Urgency distribution
-    cursor.execute("SELECT urgency, COUNT(*) as count FROM leads GROUP BY urgency")
+    cursor.execute(f"""
+        SELECT l.urgency, COUNT(DISTINCT l.id) as count
+        FROM messages m JOIN leads l ON m.lead_id = l.id
+        WHERE {where_sql}
+        GROUP BY l.urgency
+    """, params)
     urgency_dist = {row["urgency"]: row["count"] for row in cursor.fetchall()}
     
     # Lead source distribution
-    cursor.execute("SELECT lead_source, COUNT(*) as count FROM leads GROUP BY lead_source")
+    cursor.execute(f"""
+        SELECT l.lead_source, COUNT(DISTINCT l.id) as count
+        FROM messages m JOIN leads l ON m.lead_id = l.id
+        WHERE {where_sql}
+        GROUP BY l.lead_source
+    """, params)
     source_dist = {row["lead_source"]: row["count"] for row in cursor.fetchall()}
     
     # Recent message volume (last 7 days by day)
-    cursor.execute("""
-        SELECT DATE(created_at) as day, COUNT(*) as count
-        FROM messages WHERE direction = 'inbound'
-        GROUP BY DATE(created_at)
+    cursor.execute(f"""
+        SELECT DATE(m.created_at) as day, COUNT(*) as count
+        FROM messages m JOIN leads l ON m.lead_id = l.id
+        WHERE {where_sql}
+        GROUP BY DATE(m.created_at)
         ORDER BY day DESC
         LIMIT 7
-    """)
+    """, params)
     daily_volume = [{"date": row["day"], "count": row["count"]} for row in cursor.fetchall()][::-1]
     
     conn.close()

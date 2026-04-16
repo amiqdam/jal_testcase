@@ -73,6 +73,8 @@ class LeadService:
             "interested_program": "interested_program",
             "nationality": "nationality",
             "academic_achievement": "academic_achievement",
+            "phone_number": "phone_number",
+            "tanggal_lahir": "tanggal_lahir",
             "language": "language_pref",
         }
         
@@ -147,7 +149,9 @@ class LeadService:
     
     def get_leads_filtered(self, stage: str = None, urgency: str = None,
                            macro_intent: str = None, search: str = None,
-                           page: int = 1, limit: int = 20) -> dict:
+                           page: int = 1, limit: int = 20,
+                           lead_source: str = None, interested_program: str = None,
+                           school_type: str = None, contact_type: str = None) -> dict:
         """Get filtered and paginated list of leads with last message info."""
         conn = get_db()
         cursor = conn.cursor()
@@ -167,6 +171,18 @@ class LeadService:
         if search:
             where_clauses.append("(l.name LIKE ? OR l.email LIKE ?)")
             params.extend([f"%{search}%", f"%{search}%"])
+        if lead_source:
+            where_clauses.append("l.lead_source = ?")
+            params.append(lead_source)
+        if interested_program:
+            where_clauses.append("l.interested_program LIKE ?")
+            params.append(f"%{interested_program}%")
+        if school_type:
+            where_clauses.append("l.school_type = ?")
+            params.append(school_type)
+        if contact_type:
+            where_clauses.append("l.contact_type = ?")
+            params.append(contact_type)
         
         where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
         

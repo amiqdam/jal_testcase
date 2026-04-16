@@ -42,6 +42,10 @@ TUGAS: Ekstrak entitas dan informasi profil dari pesan user untuk membangun prof
 
 10. **nationality**: Kebangsaan jika disebut (Indonesian default, atau foreign)
 
+11. **phone_number**: Nomor HP/telepon jika disebut (format: 08xx, +62xx, dll)
+
+12. **tanggal_lahir**: Tanggal lahir jika disebut (format: DD-MM-YYYY atau deskriptif)
+
 ## OUTPUT FORMAT (JSON SAJA, tanpa markdown):
 {
   "reasoning": "Jelaskan apa yang kamu temukan dari pesan ini...",
@@ -55,7 +59,9 @@ TUGAS: Ekstrak entitas dan informasi profil dari pesan user untuk membangun prof
     "interested_program": "nama program|null",
     "financial_concern": false,
     "academic_achievement": "prestasi|null",
-    "nationality": "Indonesian|null"
+    "nationality": "Indonesian|null",
+    "phone_number": "nomor|null",
+    "tanggal_lahir": "tanggal|null"
   }
 }
 
@@ -105,6 +111,8 @@ def profiler_agent(state: AdmissionState, llm) -> dict:
             "interested_program": "interested_program",
             "academic_achievement": "academic_achievement",
             "nationality": "nationality",
+            "phone_number": "phone_number",
+            "tanggal_lahir": "tanggal_lahir",
         }
         
         for entity_key, db_column in field_mapping.items():

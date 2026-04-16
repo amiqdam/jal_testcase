@@ -101,3 +101,26 @@ NBA_TYPES = [
     "fast_track",
     "escalate",
 ]
+
+
+# --- Runtime Config (mutable at runtime via admin) ---
+class RuntimeConfig:
+    """Mutable configuration that can be updated via admin panel."""
+    def __init__(self):
+        self.lead_sources = list(LEAD_SOURCES)
+        self.quick_start_options = list(QUICK_START_OPTIONS)
+    
+    def update_lead_sources(self, sources: list):
+        self.lead_sources = sources
+    
+    def update_quick_start_options(self, options: list):
+        self.quick_start_options = options
+    
+    def get_lead_sources(self) -> list:
+        return self.lead_sources
+    
+    def get_quick_start_options(self) -> list:
+        return self.quick_start_options
+
+
+runtime_config = RuntimeConfig()
